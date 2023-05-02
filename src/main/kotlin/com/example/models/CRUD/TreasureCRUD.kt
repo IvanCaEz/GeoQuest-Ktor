@@ -11,18 +11,18 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class TreasureCRUD: TreasureDAO {
-    override suspend fun selectAllTreasures(): List<Treasure> = dbQuery{
+    override suspend fun selectAllTreasures(): List<Treasure> = dbQuery {
         Treasures.selectAll().map(::resultRowToTreasure)
     }
 
-    override suspend fun selectTreasureByID(idTreasure: Int): Treasure? = dbQuery{
+    override suspend fun selectTreasureByID(idTreasure: Int): Treasure? = dbQuery {
         Treasures
-            .select { Users.idUser eq idTreasure }
+            .select { Treasures.idTreasure eq idTreasure }
             .map(::resultRowToTreasure)
             .singleOrNull()
     }
 
-    override suspend fun addNewTreasure(treasureToAdd: Treasure): Treasure? = dbQuery{
+    override suspend fun addNewTreasure(treasureToAdd: Treasure): Treasure? = dbQuery {
         val insertStatement = Treasures.insert {
             it[name] = treasureToAdd.name
             it[description] = treasureToAdd.description
@@ -36,7 +36,6 @@ class TreasureCRUD: TreasureDAO {
     }
 
     override suspend fun updateTreasure(treasureToUpdate: Treasure): Boolean = dbQuery {
-
         Treasures.update ({ Users.idUser eq treasureToUpdate.idTreasure } ){
             it[name] = treasureToUpdate.name
             it[description] = treasureToUpdate.description

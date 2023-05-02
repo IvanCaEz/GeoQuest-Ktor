@@ -19,7 +19,7 @@ data class Treasure(
     var score: Double
 )
 object Treasures: Table(){
-    val idTreasure = integer("id_treasure").autoIncrement("id_treasure_seq")
+    val idTreasure = integer("id_treasure").autoIncrement("treasure_id_seq")
     val name = varchar("treasure_name", 1000)
     val description = varchar("treasure_description", 1000)
     val latitude = double("treasure_latitude")
