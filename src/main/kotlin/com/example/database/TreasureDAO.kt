@@ -1,6 +1,9 @@
 package com.example.database
 
-import com.example.models.*
+import com.example.models.Treasure
+import com.example.models.Treasures
+import com.example.models.User
+import com.example.models.Users
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 

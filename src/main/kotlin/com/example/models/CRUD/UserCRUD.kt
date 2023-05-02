@@ -46,4 +46,9 @@ class UserCRUD: UserDAO {
     override suspend fun deleteUser(idUser: Int): Boolean = dbQuery {
         Users.deleteWhere { Users.idUser eq idUser } > 0
     }
+
+    override suspend fun checkIfUserExistByNick(nickName: String): Boolean {
+        val user = Users.select { Users.nickName eq nickName }.map(::resultRowToUser).singleOrNull()
+        return user == null
+    }
 }

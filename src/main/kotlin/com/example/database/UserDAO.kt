@@ -24,6 +24,5 @@ interface UserDAO {
     suspend fun updateUser(userToUpdate: User): Boolean
     suspend fun deleteUser(idUser: Int): Boolean
 
-
-
+    suspend fun checkIfUserExistByNick(nickName: String): Boolean
 }
