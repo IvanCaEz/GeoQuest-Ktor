@@ -1,28 +1,28 @@
 package com.example.database
 
-import com.example.models.Treasure
-import com.example.models.User
-import com.example.models.Users
+import com.example.models.*
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 
 interface TreasureDAO {
-     fun resultRowToTreasure(row: ResultRow) = Treasure(
-        idTreasure = row[Users.idUser],
-        nickName = row[Users.nickName],
-        email = row[Users.email],
-        password = row[Users.password],
-        photo = row[Users.photo],
-        userLevel = row[Users.userLevel],
-        userRole = row[Users.userRole],
-        favs = listOf()
-        )
-    suspend fun selectAllUsers(): List<User>
-    suspend fun selectUserByID(idUser: Int): User?
-    suspend fun selectUserByUserName(nickName: String): User?
+    fun resultRowToTreasure(row: ResultRow) = Treasure(
+        idTreasure = row[Treasures.idTreasure],
+        name = row[Treasures.name],
+        description = row[Treasures.description],
+        latitude = row[Treasures.latitude],
+        longitude = row[Treasures.longitude],
+        image = row[Treasures.image],
+        location = row[Treasures.location],
+        clue = row[Treasures.clue],
+        status = row[Treasures.status],
+        difficulty = row[Treasures.difficulty],
+        score = row[Treasures.score],
+    )
 
-    suspend fun addNewUser(nickname: String, email: String, password:String): User?
-    suspend fun updateUser(userToUpdate: User): Boolean
-    suspend fun deleteUser(idUser: Int): Boolean
+    suspend fun selectAllTreasures(): List<Treasure>
+    suspend fun selectTreasureByID(idTreasure: Int): Treasure?
+    suspend fun addNewTreasure(treasureToAdd: Treasure): Treasure?
+    suspend fun updateTreasure(treasureToUpdate: Treasure): Boolean
+    suspend fun deleteTreasure(idTreasure: Int): Boolean
 
 }

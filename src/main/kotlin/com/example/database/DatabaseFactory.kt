@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.name
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -20,14 +21,23 @@ object DatabaseFactory {
         val password = "AVNS_hm2mNlomL9mn9cePWwo"
         val jdbcURL = "jdbc:postgresql://geoquest-database-geoquest-1.aivencloud.com:26293/geoquestdb?sslmode=require"
         val database = Database.connect(jdbcURL, driverClassName, username, password)
+
         transaction(database) {
-           // SchemaUtils.createMissingTablesAndColumns(Users)
+
+
+
 
             runBlocking {
+
+
                 val userToUpdate = User(1, "Alejandro", "ale@jandro.com", "123456", "placeholder.png", "Noob", "Admin", listOf())
                println( userCRUD.selectUserByUserName("Alejandro"))
             }
         }
+
+
+
+
     }
     suspend fun <T> dbQuery(block: suspend () -> T): T =
         newSuspendedTransaction(Dispatchers.IO) { block() }

@@ -9,6 +9,7 @@ data class Treasure(
     val idTreasure: Int,
     var name: String,
     var description: String,
+    var image: String,
     var latitude: Double,
     var longitude: Double,
     var location: String,
@@ -17,13 +18,17 @@ data class Treasure(
     var difficulty: String,
     var score: Double
 )
-object Treasure: Table(){
-    val idUser = integer("id_user").autoIncrement("id_user_seq")
-    val nickName = varchar("user_nick", 1000)
-    val email = varchar("user_email", 1000)
-    val password = varchar("user_password", 1000)
-    val photo = varchar("user_photo", 1000)
-    val userLevel = varchar("user_level", 1000)
-    val userRole = varchar("user_role", 1000)
-    override val primaryKey = PrimaryKey(idUser, name = "users_pkey")
+object Treasures: Table(){
+    val idTreasure = integer("id_treasure").autoIncrement("id_treasure_seq")
+    val name = varchar("treasure_name", 1000)
+    val description = varchar("treasure_description", 1000)
+    val latitude = double("treasure_latitude")
+    val longitude = double("treasure_longitude")
+    val image = varchar("treasure_image",1000)
+    val location = varchar("treasure_location", 1000)
+    val clue = varchar("treasure_clue", 1000)
+    val status = varchar("treasure_status", 1000)
+    val difficulty = varchar("treasure_difficulty", 1000)
+    val score = double("treasure_score")
+    override val primaryKey = PrimaryKey(idTreasure, name = "treasure_pkey")
 }
