@@ -1,5 +1,7 @@
 package com.example.routes
 
+import com.example.database.UserDAO
+import com.example.models.CRUD.UserCRUD
 import com.example.models.Game
 import com.example.models.User
 import com.example.models.UserStats
@@ -13,13 +15,29 @@ import io.ktor.server.routing.*
 import java.io.File
 import java.io.FileNotFoundException
 
-fun Route.userRouting(){
-    route("/user"){
-        post ("/login"){
+fun Route.userRouting() {
+    val userCrud = UserCRUD()
+    route("/user") {
+        post("/login") {
             // recibimos este formato username,password
             val userCredentials = call.receive<String>()
             val userName = userCredentials.split(",")[0]
             val password = userCredentials.split(",")[1]
+
+
+            val userLogging = userCrud.selectUserByUserName(userName)
+            if (userLogging != null) {
+                if (userLogging.password == password){
+                    return@post call.respondText("idUser: ${userLogging.idUser}",
+                        status = HttpStatusCode.OK)
+                } else {
+                    return@post call.respondText("idUser: ${userLogging.idUser}",
+                        status = HttpStatusCode.OK)
+                }
+            } else {
+
+            }
+
 
             // buscamos en la base de datos, si hay un user con estas credenciales
             //hacer un if buscando estas credenciales
@@ -32,42 +50,50 @@ fun Route.userRouting(){
 
         }
 
-        get("{userID}"){
+        get("{userID}") {
             val userID = call.parameters["userID"]
-            if (userID.isNullOrBlank()) return@get call.respondText("Missing user id.",
-                status = HttpStatusCode.BadRequest)
+            if (userID.isNullOrBlank()) return@get call.respondText(
+                "Missing user id.",
+                status = HttpStatusCode.BadRequest
+            )
 
             // buscar en la bd con el userid y retornar el user si lo hay
         }
-        put("{userID}"){
+        put("{userID}") {
             val userID = call.parameters["userID"]
-            if (userID.isNullOrBlank()) return@put call.respondText("Missing user id.",
-                status = HttpStatusCode.BadRequest)
+            if (userID.isNullOrBlank()) return@put call.respondText(
+                "Missing user id.",
+                status = HttpStatusCode.BadRequest
+            )
 
             val userData = call.receiveMultipart()
 
-            var userToUpdate = User(userID.toInt(), "", "", "", "","",
-                "", listOf())
+            var userToUpdate = User(
+                userID.toInt(), "", "", "", "", "",
+                "", listOf()
+            )
 
             val gson = Gson()
 
             userData.forEachPart { part ->
-                when (part){
+                when (part) {
                     is PartData.FormItem -> {
                         userToUpdate = gson.fromJson(part.value, User::class.java)
                     }
+
                     is PartData.FileItem -> {
                         try {
                             userToUpdate.photo = part.originalFileName as String
-                            if (userToUpdate.photo != "buscar en base de datos"){
+                            if (userToUpdate.photo != "buscar en base de datos") {
                                 val fileBytes = part.streamProvider().readBytes()
-                                File("src/main/kotlin/com/example/user_pictures/"+userToUpdate.photo)
+                                File("src/main/kotlin/com/example/user_pictures/" + userToUpdate.photo)
                                     .writeBytes(fileBytes)
                             }
-                        } catch (e: FileNotFoundException){
+                        } catch (e: FileNotFoundException) {
                             println("Error ${e.message}")
                         }
                     }
+
                     else -> {}
                 }
                 println("Subido ${part.name}")
@@ -77,44 +103,52 @@ fun Route.userRouting(){
             //userToUpdate.favs = llamada a base de datos para recoger los favs
             // buscar en la bd con el userid y updatear el user
         }
-        delete("{userID}"){
+        delete("{userID}") {
             val userID = call.parameters["userID"]
-            if (userID.isNullOrBlank()) return@delete call.respondText("Missing user id.",
-                status = HttpStatusCode.BadRequest)
+            if (userID.isNullOrBlank()) return@delete call.respondText(
+                "Missing user id.",
+                status = HttpStatusCode.BadRequest
+            )
 
             // eliminar todas las cosas que tenga el user asociadas (reviews, games, stats, reports)
             // antes de eliminar el user
         }
 
-        get("{userName}"){
+        get("{userName}") {
             val userName = call.parameters["userName"]
-            if (userName.isNullOrBlank()) return@get call.respondText("Missing username.",
-                status = HttpStatusCode.BadRequest)
+            if (userName.isNullOrBlank()) return@get call.respondText(
+                "Missing username.",
+                status = HttpStatusCode.BadRequest
+            )
 
             // buscar en la bd con el userName y retornar el user si lo hay
         }
 
-        get("{userID}/picture"){
+        get("{userID}/picture") {
             var userImage: File = File("")
             val userID = call.parameters["userID"]
-            if (userID.isNullOrBlank()) return@get call.respondText("Missing user id.",
-                status = HttpStatusCode.BadRequest)
+            if (userID.isNullOrBlank()) return@get call.respondText(
+                "Missing user id.",
+                status = HttpStatusCode.BadRequest
+            )
             val userPhoto = ""
 
             //val user = recuperamos el user de la base de datos
-            userImage = File("src/main/kotlin/com/example/user_pictures/"+userPhoto)
-            if (userImage.exists()){
+            userImage = File("src/main/kotlin/com/example/user_pictures/" + userPhoto)
+            if (userImage.exists()) {
                 call.respondFile(userImage)
             } else {
                 call.respondText("No image found.", status = HttpStatusCode.NotFound)
             }
         }
 
-        get("{userID}/stats"){
+        get("{userID}/stats") {
             val userID = call.parameters["userID"]
-            if (userID.isNullOrBlank()) return@get call.respondText("Missing user id.",
-                status = HttpStatusCode.BadRequest)
-            val userStats = UserStats(userID.toInt(), 0,0,0,0.0)
+            if (userID.isNullOrBlank()) return@get call.respondText(
+                "Missing user id.",
+                status = HttpStatusCode.BadRequest
+            )
+            val userStats = UserStats(userID.toInt(), 0, 0, 0, 0.0)
 
             //val user = recuperamos el user de la base de datos
             // buscar en la BBDD los juegos con el id del usuario y actualizar el userStats
@@ -123,9 +157,6 @@ fun Route.userRouting(){
 
 
         }
-
-
-
 
 
     }
