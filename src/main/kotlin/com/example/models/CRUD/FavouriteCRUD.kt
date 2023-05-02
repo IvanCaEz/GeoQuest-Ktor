@@ -3,16 +3,20 @@ package com.example.models.CRUD
 import com.example.database.DatabaseFactory.dbQuery
 import com.example.database.FavouriteDAO
 import com.example.models.*
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 
 class FavouriteCRUD: FavouriteDAO {
-    override suspend fun selectAllFavourites(userID: Int): List<Favourite> = dbQuery {
-        Favourites.selectAll().map(::resultRowToFavourite)
+    override suspend fun selectAllFavouritesByUserID(userID: Int): List<Favourite> = dbQuery {
+        Favourites.select {Favourites.idUser eq userID}.map(::resultRowToFavourite)
     }
+
+    override suspend fun selectAllFavouritesByTreasureID(treasureID: Int): List<Favourite> = dbQuery {
+        Favourites.select {Favourites.idTreasure eq treasureID}.map(::resultRowToFavourite)
+
+    }
+
     override suspend fun addFavourite(userID: Int, treasureID: Int): Favourite? = dbQuery {
         val insertStatement = Favourites.insert {
             it[idUser] = userID

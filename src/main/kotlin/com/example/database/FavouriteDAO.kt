@@ -9,7 +9,9 @@ interface FavouriteDAO {
         idTreasure = row[Favourites.idTreasure],
     )
 
-    suspend fun selectAllFavourites(userID: Int): List<Favourite>
+    suspend fun selectAllFavouritesByUserID(userID: Int): List<Favourite>
+    suspend fun selectAllFavouritesByTreasureID(treasureID: Int): List<Favourite>
+
     suspend fun addFavourite(userID: Int, treasureID: Int): Favourite?
     suspend fun deleteFavourite(userID: Int, treasureID: Int): Boolean
 }

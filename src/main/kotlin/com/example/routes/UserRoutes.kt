@@ -75,12 +75,9 @@ fun Route.userRouting() {
                 status = HttpStatusCode.BadRequest)
 
             val userData = call.receiveMultipart()
-
             var userToUpdate = User(userID.toInt(), "", "", "", "","",
                 "", listOf())
-
             val gson = Gson()
-
             userData.forEachPart { part ->
                 when (part){
                     is PartData.FormItem -> {
@@ -101,14 +98,9 @@ fun Route.userRouting() {
                     else -> {}
                 }
                 println("Subido ${part.name}")
-
-
             }
 
-            // Cogemos la lista de id's de los tesoros favoritos del usuario,
-            // iteramos esa lista y añadimos el tesoro correspondiente a la lista que luego
-            // asignaremos al usuario
-            val favouriteTreasuresID = favCrud.selectAllFavourites(userID.toInt())
+            val favouriteTreasuresID = favCrud.selectAllFavouritesByUserID(userID.toInt())
             val favTreasures = mutableListOf<Treasure>()
 
             favouriteTreasuresID.forEach { fav ->
@@ -120,8 +112,6 @@ fun Route.userRouting() {
             return@put call.respondText(
                 "User with id $userID has been updated.", status = HttpStatusCode.Accepted
             )
-
-
         }
         delete("{userID}"){
             val userID = call.parameters["userID"]
@@ -129,7 +119,7 @@ fun Route.userRouting() {
                 status = HttpStatusCode.BadRequest)
 
             // Primero eliminamos los favoritos, los games (las reviews) y los reports
-            val favList = favCrud.selectAllFavourites(userID.toInt())
+            val favList = favCrud.selectAllFavouritesByUserID(userID.toInt())
             favList.forEach { fav ->
                 favCrud.deleteFavourite(userID.toInt(), fav.idTreasure)
             }
@@ -137,6 +127,8 @@ fun Route.userRouting() {
 
             // Luego eliminamos el user
             userCrud.deleteUser(userID.toInt())
+            call.respondText("User with id $userID has been deleted.",
+                status = HttpStatusCode.OK)
 
         }
 
@@ -178,10 +170,51 @@ fun Route.userRouting() {
             // buscar en la BBDD los juegos con el id del usuario y actualizar el userStats
             // buscar en la BBDD los reports con el id del usuario
             val gamesPlayed = listOf<Game>() // hacer counts/average en las querys
+            //TODO()
+
+        }
+
+
+        get("{userID}/treasures"){
+            val userID = call.parameters["userID"]
+            if (userID.isNullOrBlank()) return@get call.respondText("Missing user id.",
+                status = HttpStatusCode.BadRequest)
+            val userStats = UserStats(userID.toInt(), 0,0,0,0.0)
+
+            val user = userCrud.selectUserByID(userID.toInt())
+                 //TODO()
 
 
         }
 
+
+        get("{userID}/favs"){
+            val userID = call.parameters["userID"]
+            if (userID.isNullOrBlank()) return@get call.respondText("Missing user id.",
+                status = HttpStatusCode.BadRequest)
+            val favList = favCrud.selectAllFavouritesByUserID(userID.toInt())
+            if (favList.isNotEmpty()){
+                call.respond(favList)
+            } else call.respondText("User with id $userID hasn't mark any treasure as favourite.")
+        }
+        post("{userID}/favs"){
+            val userID = call.parameters["userID"]
+            if (userID.isNullOrBlank()) return@post call.respondText("Missing user id.",
+                status = HttpStatusCode.BadRequest)
+            val treasureID = call.receive<Treasure>().idTreasure
+            favCrud.addFavourite(userID.toInt(), treasureID)
+            call.respondText("Treasure with id $treasureID added to user with id $userID list of favorites.")
+        }
+        delete("{userID}/favs/{treasureID}"){
+            val userID = call.parameters["userID"]
+            val treasureID = call.parameters["treasureID"]
+            if (userID.isNullOrBlank()) return@delete call.respondText("Missing user id.",
+                status = HttpStatusCode.BadRequest)
+            if (treasureID.isNullOrBlank()) return@delete call.respondText("Missing treasure id.",
+                status = HttpStatusCode.BadRequest)
+            favCrud.deleteFavourite(userID.toInt(), treasureID.toInt())
+            call.respondText("Treasure with id $treasureID deleted from user with id $userID list of favorites.")
+        }
 
 
 
