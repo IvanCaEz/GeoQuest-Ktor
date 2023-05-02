@@ -4,8 +4,6 @@ import com.example.database.DatabaseFactory.dbQuery
 import com.example.database.ReportDAO
 import com.example.models.Report
 import com.example.models.Reports
-import com.example.models.Treasures
-import com.example.models.Users
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 

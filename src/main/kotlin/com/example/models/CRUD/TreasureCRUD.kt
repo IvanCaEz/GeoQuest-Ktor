@@ -2,10 +2,8 @@ package com.example.models.CRUD
 
 import com.example.database.DatabaseFactory.dbQuery
 import com.example.database.TreasureDAO
-import com.example.database.UserDAO
 import com.example.models.Treasure
 import com.example.models.Treasures
-import com.example.models.User
 import com.example.models.Users
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq

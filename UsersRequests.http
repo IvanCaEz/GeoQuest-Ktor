@@ -1,0 +1,27 @@
+// POST de USER
+###
+POST http://127.0.0.1:8080/user/login
+Content-Type: application/json
+
+Alejandro,123456
+
+
+###
+GET http://127.0.0.1:8080/user/1
+Accept: application/json
+
+###
+PUT http://127.0.0.1:8080/user/1
+Content-Type: multipart/form-data
+
+{
+  "idUser": 1,
+  "nickName": "Alejandro",
+  "email": "ale@jandro.com",
+  "password": "123456",
+  "photo": "placeholder.png",
+  "userLevel": "Noob",
+  "userRole": "Admin",
+  "favs": []
+}
+

@@ -1,5 +1,6 @@
 package com.example.database
 
+import com.example.models.CRUD.TreasureCRUD
 import com.example.models.CRUD.UserCRUD
 import com.example.models.User
 import com.example.models.Users
@@ -22,16 +23,13 @@ object DatabaseFactory {
         val jdbcURL = "jdbc:postgresql://geoquest-database-geoquest-1.aivencloud.com:26293/geoquestdb?sslmode=require"
         val database = Database.connect(jdbcURL, driverClassName, username, password)
 
+
         transaction(database) {
-
-
-
 
             runBlocking {
 
-
                 val userToUpdate = User(1, "Alejandro", "ale@jandro.com", "123456", "placeholder.png", "Noob", "Admin", listOf())
-               println( userCRUD.selectUserByUserName("Alejandro"))
+               println( userCRUD.addNewUser("Alejandro","ale@jandro.com", "123456" ))
             }
         }
 
