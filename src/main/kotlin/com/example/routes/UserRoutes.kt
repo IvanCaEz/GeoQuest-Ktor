@@ -1,9 +1,6 @@
 package com.example.routes
 
-import com.example.models.CRUD.FavouriteCRUD
-import com.example.models.CRUD.GameCRUD
-import com.example.models.CRUD.TreasureCRUD
-import com.example.models.CRUD.UserCRUD
+import com.example.models.CRUD.*
 import com.example.models.Game
 import com.example.models.Treasure
 import com.example.models.User
@@ -124,9 +121,9 @@ fun Route.userRouting() {
             favList.forEach { fav ->
                 favCrud.deleteFavourite(userID.toInt(), fav.idTreasure)
             }
-            //TODO() Eliminar games, reviews y reports
-
-            // Luego eliminamos el user
+            // Eliminamos lo asociado al user y luego eliminamos el user
+            ReportCRUD().deleteReportsOfUser(userID.toInt())
+            ReviewCRUD().deleteReviewsOfUser(userID.toInt())
             GameCRUD().deleteUserGames(userID.toInt())
             userCrud.deleteUser(userID.toInt())
             call.respondText("User with id $userID has been deleted.",
