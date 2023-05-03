@@ -218,9 +218,6 @@ fun Route.userRouting() {
             call.respondText("Treasure with id $treasureID deleted from user with id $userID list of favorites.")
         }
 
-
-
-
     }
 
 }

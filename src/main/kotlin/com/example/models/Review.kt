@@ -1,9 +1,7 @@
 package com.example.models
 
-import com.example.models.Games.autoIncrement
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.`java-time`.date
 
 @Serializable
 data class Review (

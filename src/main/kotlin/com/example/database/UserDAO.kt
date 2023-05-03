@@ -16,6 +16,7 @@ interface UserDAO {
         userRole = row[Users.userRole],
         favs = listOf()
         )
+
     suspend fun selectAllUsers(): List<User>
     suspend fun selectUserByID(idUser: Int): User?
     suspend fun selectUserByUserName(nickName: String): User?

@@ -1,7 +1,9 @@
 package com.example.models
 
+import com.example.models.Favourites.references
 import com.example.models.Users.autoIncrement
 import kotlinx.serialization.Serializable
+import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
 
 @Serializable
@@ -31,4 +33,5 @@ object Treasures: Table(){
     val difficulty = varchar("treasure_difficulty", 1000)
     val score = double("treasure_score")
     override val primaryKey = PrimaryKey(idTreasure, name = "treasure_pkey")
+
 }
