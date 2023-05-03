@@ -11,11 +11,14 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import java.io.File
 import java.io.FileNotFoundException
+import java.time.Duration
+import java.util.concurrent.TimeUnit
 
 fun Route.userRouting() {
     val userCrud = UserCRUD()
     val favCrud = FavouriteCRUD()
     val treasureCrud = TreasureCRUD()
+    val gameCrud = GameCRUD()
     route("/user") {
         post("/login") {
             // recibimos este formato username,password
@@ -159,15 +162,30 @@ fun Route.userRouting() {
             val userID = call.parameters["userID"]
             if (userID.isNullOrBlank()) return@get call.respondText("Missing user id.",
                 status = HttpStatusCode.BadRequest)
-            val userStats = UserStats(userID.toInt(), 0,0,0,0.0)
 
-            val user = userCrud.selectUserByID(userID.toInt())
+            var totalSolved = 0
+            var totalNotSolved = 0
 
-            // buscar en la BBDD los juegos con el id del usuario y actualizar el userStats
-            // buscar en la BBDD los reports con el id del usuario
-            val gamesPlayed = listOf<Game>() // hacer counts/average en las querys
-            //TODO()
+            val listOfGames = gameCrud.selectAllUserGames(userID.toInt())
+            for (i in listOfGames.indices){
+                if (listOfGames[i].solved) totalSolved++
+                else totalNotSolved++
+            }
 
+            val reportQuantity = ReportCRUD().selectAllReportByUserId(userID.toInt()).size
+            var difference = 0L
+            listOfGames.forEach { game ->
+                difference += Duration.between(game.timeStart, game.timeEnd).toMillis()
+            }
+            val time = difference / listOfGames.size
+
+            val hours = TimeUnit.MILLISECONDS.toHours(time)
+            val minutes = TimeUnit.MILLISECONDS.toMinutes(time) % 60
+            val seconds = TimeUnit.MILLISECONDS.toSeconds(time) % 60
+            val averageTime = "$hours:$minutes:$seconds"
+
+            val userStats = UserStats(userID.toInt(), totalSolved, totalNotSolved, reportQuantity, averageTime)
+            call.respond(userStats)
         }
 
 
@@ -175,12 +193,6 @@ fun Route.userRouting() {
             val userID = call.parameters["userID"]
             if (userID.isNullOrBlank()) return@get call.respondText("Missing user id.",
                 status = HttpStatusCode.BadRequest)
-            val userStats = UserStats(userID.toInt(), 0,0,0,0.0)
-
-            val user = userCrud.selectUserByID(userID.toInt())
-                 //TODO()
-
-
         }
 
 

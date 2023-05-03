@@ -20,6 +20,11 @@ class ReportCRUD : ReportDAO {
             .singleOrNull()
     }
 
+    override suspend fun selectAllReportByUserId(userId: Int): List<Report> = dbQuery {
+        Reports.select { Reports.idUser eq userId }
+            .map(::resultRowToReport)
+    }
+
     override suspend fun postReport(reportToAdd: Report): Report? = dbQuery {
         val insertStatement = Reports.insert {
             it[idUser] = reportToAdd.idUser

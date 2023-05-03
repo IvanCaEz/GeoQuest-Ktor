@@ -16,6 +16,7 @@ interface ReportDAO {
 
     suspend fun selectAllTreasureReports(idTreasure: Int): List<Report>
     suspend fun selectTreasureReportByID(idTreasure: Int, idReport: Int): Report?
+    suspend fun selectAllReportByUserId(userId: Int): List<Report>
     suspend fun postReport(reportToAdd: Report): Report?
     suspend fun deleteReport(idReport: Int): Boolean
     suspend fun deleteReportsOfTreasure(idTreasure: Int): Boolean

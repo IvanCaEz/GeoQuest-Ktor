@@ -8,5 +8,5 @@ data class UserStats(
     var solved: Int,
     var notSolved: Int,
     var reportQuantity: Int,
-    var averageTime: Double
+    var averageTime: String
 )

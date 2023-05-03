@@ -67,6 +67,4 @@ class GameCRUD: GameDAO {
     override suspend fun deleteTreasureGame(idTreasure: Int): Boolean  = dbQuery {
         Games.deleteWhere { Games.idTreasure eq idTreasure } > 0
     }
-
-
 }
