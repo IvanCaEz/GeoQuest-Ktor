@@ -13,6 +13,8 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.postgresql.ds.PGSimpleDataSource
+import java.sql.Timestamp
+import java.time.Duration
 
 object DatabaseFactory {
     fun init() {
@@ -29,7 +31,7 @@ object DatabaseFactory {
             runBlocking {
 
                 val userToUpdate = User(1, "Alejandro", "ale@jandro.com", "123456", "placeholder.png", "Noob", "Admin", listOf())
-               println( userCRUD.addNewUser("Alejandro","ale@jandro.com", "123456" ))
+
             }
         }
 

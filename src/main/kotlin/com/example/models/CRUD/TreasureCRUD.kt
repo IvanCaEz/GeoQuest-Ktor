@@ -9,19 +9,19 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class TreasureCRUD: TreasureDAO {
-    override suspend fun selectAllTreasures(): List<Treasure> = dbQuery {
-        Treasures.selectAll().map(::resultRowToTreasure)
+    override suspend fun selectAllTreasures(): List<Treasures> = dbQuery {
+        Treasure.selectAll().map(::resultRowToTreasure)
     }
 
-    override suspend fun selectTreasureByID(idTreasure: Int): Treasure? = dbQuery {
-        Treasures
-            .select { Treasures.idTreasure eq idTreasure }
+    override suspend fun selectTreasureByID(idTreasure: Int): Treasures? = dbQuery {
+        Treasure
+            .select { Treasure.idTreasure eq idTreasure }
             .map(::resultRowToTreasure)
             .singleOrNull()
     }
 
-    override suspend fun addNewTreasure(treasureToAdd: Treasure): Treasure? = dbQuery {
-        val insertStatement = Treasures.insert {
+    override suspend fun addNewTreasure(treasureToAdd: Treasures): Treasures? = dbQuery {
+        val insertStatement = Treasure.insert {
             it[name] = treasureToAdd.name
             it[description] = treasureToAdd.description
             it[image] = treasureToAdd.image
@@ -33,8 +33,8 @@ class TreasureCRUD: TreasureDAO {
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToTreasure)
     }
 
-    override suspend fun updateTreasure(treasureToUpdate: Treasure): Boolean = dbQuery {
-        Treasures.update ({ Users.idUser eq treasureToUpdate.idTreasure } ){
+    override suspend fun updateTreasure(treasureToUpdate: Treasures): Boolean = dbQuery {
+        Treasure.update ({ Treasure.idTreasure eq treasureToUpdate.idTreasure } ){
             it[name] = treasureToUpdate.name
             it[description] = treasureToUpdate.description
             it[image] = treasureToUpdate.image
@@ -48,7 +48,7 @@ class TreasureCRUD: TreasureDAO {
     }
 
     override suspend fun deleteTreasure(idTreasure: Int): Boolean = dbQuery {
-        Treasures.deleteWhere { Treasures.idTreasure eq idTreasure } > 0
+        Treasure.deleteWhere { Treasure.idTreasure eq idTreasure } > 0
     }
 
 }

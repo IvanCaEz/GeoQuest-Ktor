@@ -8,23 +8,23 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 
 interface TreasureDAO {
-    fun resultRowToTreasure(row: ResultRow) = Treasure(
-        idTreasure = row[Treasures.idTreasure],
-        name = row[Treasures.name],
-        description = row[Treasures.description],
-        latitude = row[Treasures.latitude],
-        longitude = row[Treasures.longitude],
-        image = row[Treasures.image],
-        location = row[Treasures.location],
-        clue = row[Treasures.clue],
-        status = row[Treasures.status],
-        difficulty = row[Treasures.difficulty],
-        score = row[Treasures.score],
+    fun resultRowToTreasure(row: ResultRow) = Treasures(
+        idTreasure = row[Treasure.idTreasure],
+        name = row[Treasure.name],
+        description = row[Treasure.description],
+        latitude = row[Treasure.latitude],
+        longitude = row[Treasure.longitude],
+        image = row[Treasure.image],
+        location = row[Treasure.location],
+        clue = row[Treasure.clue],
+        status = row[Treasure.status],
+        difficulty = row[Treasure.difficulty],
+        score = row[Treasure.score],
     )
 
-    suspend fun selectAllTreasures(): List<Treasure>
-    suspend fun selectTreasureByID(idTreasure: Int): Treasure?
-    suspend fun addNewTreasure(treasureToAdd: Treasure): Treasure?
-    suspend fun updateTreasure(treasureToUpdate: Treasure): Boolean
+    suspend fun selectAllTreasures(): List<Treasures>
+    suspend fun selectTreasureByID(idTreasure: Int): Treasures?
+    suspend fun addNewTreasure(treasureToAdd: Treasures): Treasures?
+    suspend fun updateTreasure(treasureToUpdate: Treasures): Boolean
     suspend fun deleteTreasure(idTreasure: Int): Boolean
 }

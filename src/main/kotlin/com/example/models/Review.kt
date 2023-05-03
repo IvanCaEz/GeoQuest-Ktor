@@ -14,7 +14,7 @@ data class Review (
 )
 object Reviews: Table(){
     val idReview = integer("id_review").autoIncrement("id_review_seq")
-    val idTreasure = integer("id_treasure").references(Treasures.idTreasure)
+    val idTreasure = integer("id_treasure").references(Treasure.idTreasure)
     val idUser = integer("id_user").references(Users.idUser)
     val opinion = varchar("review_opinion", 1000)
     val rating = integer("review_rating")

@@ -1,13 +1,10 @@
 package com.example.models
 
-import com.example.models.Favourites.references
-import com.example.models.Users.autoIncrement
 import kotlinx.serialization.Serializable
-import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.Table
 
 @Serializable
-data class Treasure(
+data class Treasures(
     val idTreasure: Int,
     var name: String,
     var description: String,
@@ -20,8 +17,8 @@ data class Treasure(
     var difficulty: String,
     var score: Double
 )
-object Treasures: Table(){
-    val idTreasure = integer("id_treasure").autoIncrement("treasure_id_seq")
+object Treasure: Table(){
+    val idTreasure = integer("treasure_id").autoIncrement("treasure_id_seq")
     val name = varchar("treasure_name", 1000)
     val description = varchar("treasure_description", 1000)
     val latitude = double("treasure_latitude")

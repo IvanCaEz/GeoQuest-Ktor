@@ -10,5 +10,5 @@ data class TreasureStats(
     val totalFavourite: Int,
     val totalReviews: Int,
     val reportQuantity: Int,
-    val averageTime: Double
+    val averageTime: String
 )

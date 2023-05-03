@@ -7,6 +7,8 @@ import com.example.models.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.selectAll
+import java.sql.Timestamp
+import java.time.Duration
 import java.util.*
 
 class GameCRUD: GameDAO {
@@ -32,6 +34,9 @@ class GameCRUD: GameDAO {
             .select { Games.idTreasure eq idTreasure }
             .map(::resultRowToGame)
     }
+
+
+
 
     override suspend fun postGame(gameToAdd: Game): Game?  = dbQuery {
         val insertStatement = Games.insert {

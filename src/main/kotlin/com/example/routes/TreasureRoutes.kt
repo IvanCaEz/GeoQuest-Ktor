@@ -1,8 +1,8 @@
 package com.example.routes
 
 import com.example.models.CRUD.*
-import com.example.models.Treasure
 import com.example.models.TreasureStats
+import com.example.models.Treasures
 import com.google.gson.Gson
 import io.ktor.http.*
 import io.ktor.http.content.*
@@ -12,6 +12,9 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import java.io.File
 import java.io.FileNotFoundException
+import java.time.Duration
+import java.time.LocalTime
+import java.util.concurrent.TimeUnit
 
 fun Route.treasureRouting() {
     val treasureCrud = TreasureCRUD()
@@ -47,24 +50,27 @@ fun Route.treasureRouting() {
             )
             val treasure = treasureCrud.selectTreasureByID(treasureID.toInt())
             if (treasure != null) {
-
                 val games = gameCrud.selectAllTreasureGames(treasureID.toInt())
-                // Buscar en games, reports, reviews y favs por idTreasure y construir TreasureStats()
-                /*
-                    val idTreasure: Int,
-                    val totalPlayed: Int,
-                    val totalFound: Int,
-                    val totalFavourite: Int,
-                    val totalReviews: Int,
-                    val reportQuantity: Int,
-                    val averageTime: Double
-                */
+
                 val totalPlayed = games.count()
                 val totalFound = games.count { it.solved }
                 val totalFavourites = favouriteCrud.selectAllFavouritesByTreasureID(treasureID.toInt()).size
+                val reviews = reviewCrud.selectAllTreasureReviews(treasureID.toInt())
+                val reportQuantity = reportCrud.selectAllTreasureReports(treasureID.toInt()).size
+                var diff = 0L
+                games.forEach { game ->
+                    diff += Duration.between(game.timeStart, game.timeEnd).toMillis()
+                }
 
-                //val treasureStats = TreasureStats(treasureID.toInt(), totalPlayed, totalFound, totalFavourites, )
+                val hours = TimeUnit.MILLISECONDS.toHours(diff/games.size)
+                val minutes = TimeUnit.MILLISECONDS.toMinutes(diff/games.size) % 60
+                val seconds = TimeUnit.MILLISECONDS.toSeconds(diff/games.size) % 60
+                val averageTime = "$hours:$minutes:$seconds"
 
+               val treasureStats = TreasureStats(treasureID.toInt(), totalPlayed, totalFound,
+                   totalFavourites, reviews.size, reportQuantity, averageTime)
+
+                call.respond(treasureStats)
 
             } else call.respondText(
                 "Treasure with id $treasureID not found.",
@@ -74,14 +80,14 @@ fun Route.treasureRouting() {
 
         post {
             val treasureData = call.receiveMultipart()
-            var treasureToAdd = Treasure(
+            var treasureToAdd = Treasures(
                 0, "", "", "", 0.0, 0.0,
                 "", "", "", "", 0.0)
             val gson = Gson()
             treasureData.forEachPart { part ->
                 when (part) {
                     is PartData.FormItem -> {
-                        treasureToAdd = gson.fromJson(part.value, Treasure::class.java)
+                        treasureToAdd = gson.fromJson(part.value, Treasures::class.java)
                     }
                     is PartData.FileItem -> {
                         try {
@@ -110,14 +116,14 @@ fun Route.treasureRouting() {
                 "Missing treasure id.", status = HttpStatusCode.BadRequest
             )
             val treasureData = call.receiveMultipart()
-            var treasureToUpdate = Treasure(
+            var treasureToUpdate = Treasures(
                 0, "", "", "", 0.0, 0.0,
                 "", "", "", "", 0.0)
             val gson = Gson()
             treasureData.forEachPart { part ->
                 when (part) {
                     is PartData.FormItem -> {
-                        treasureToUpdate = gson.fromJson(part.value, Treasure::class.java)
+                        treasureToUpdate = gson.fromJson(part.value, Treasures::class.java)
                     }
                     is PartData.FileItem -> {
                         try {
@@ -135,7 +141,9 @@ fun Route.treasureRouting() {
                 }
                 println("Subido ${part.name}")
             }
-            //TODO() update score
+
+            val reviews = reviewCrud.selectAllTreasureReviews(treasureID.toInt())
+            treasureToUpdate.score = reviews.sumOf { review -> review.rating.toDouble() } / reviews.size
             treasureCrud.updateTreasure(treasureToUpdate)
             return@put call.respondText(
                 "Treasure with id ${treasureToUpdate.idTreasure} and ${treasureToUpdate.name} has been updated.",
@@ -147,9 +155,9 @@ fun Route.treasureRouting() {
             if (treasureID.isNullOrBlank()) return@delete call.respondText(
                 "Missing treasure id.", status = HttpStatusCode.BadRequest
             )
-            //Eliminar, game, reviews y reports
+            //Eliminamos, game, reviews y reports
             gameCrud.deleteTreasureGame(treasureID.toInt())
-            reviewCrud.deleteAllReviewsByTreasureId(treasureID.toInt())
+            reviewCrud.deleteReviewsOfTreasure(treasureID.toInt())
             reportCrud.deleteReportsOfTreasure(treasureID.toInt())
             treasureCrud.deleteTreasure(treasureID.toInt())
             call.respondText(

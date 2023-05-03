@@ -13,7 +13,7 @@ data class User(
     var photo: String,
     var userLevel: String,
     var userRole: String,
-    var favs: List<Treasure>
+    var favs: List<Treasures>
 )
 object Users: Table(){
     val idUser = integer("id_user").autoIncrement("id_user_seq")

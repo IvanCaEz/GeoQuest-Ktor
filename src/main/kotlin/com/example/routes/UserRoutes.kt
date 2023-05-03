@@ -1,10 +1,7 @@
 package com.example.routes
 
+import com.example.models.*
 import com.example.models.CRUD.*
-import com.example.models.Game
-import com.example.models.Treasure
-import com.example.models.User
-import com.example.models.UserStats
 import com.google.gson.Gson
 import io.ktor.http.*
 import io.ktor.http.content.*
@@ -99,7 +96,7 @@ fun Route.userRouting() {
             }
 
             val favouriteTreasuresID = favCrud.selectAllFavouritesByUserID(userID.toInt())
-            val favTreasures = mutableListOf<Treasure>()
+            val favTreasures = mutableListOf<Treasures>()
 
             favouriteTreasuresID.forEach { fav ->
                 favTreasures.add(treasureCrud.selectTreasureByID(fav.idTreasure)!!)
@@ -200,7 +197,7 @@ fun Route.userRouting() {
             val userID = call.parameters["userID"]
             if (userID.isNullOrBlank()) return@post call.respondText("Missing user id.",
                 status = HttpStatusCode.BadRequest)
-            val treasureID = call.receive<Treasure>().idTreasure
+            val treasureID = call.receive<Treasures>().idTreasure
             favCrud.addFavourite(userID.toInt(), treasureID)
             call.respondText("Treasure with id $treasureID added to user with id $userID list of favorites.")
         }
