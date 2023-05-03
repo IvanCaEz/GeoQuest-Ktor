@@ -1,6 +1,7 @@
 package com.example.routes
 
 import com.example.models.CRUD.FavouriteCRUD
+import com.example.models.CRUD.GameCRUD
 import com.example.models.CRUD.TreasureCRUD
 import com.example.models.Treasure
 import com.example.models.TreasureStats
@@ -18,6 +19,7 @@ import java.io.FileNotFoundException
 fun Route.treasureRouting() {
     val treasureCrud = TreasureCRUD()
     val favouriteCrud = FavouriteCRUD()
+    val gameCrud = GameCRUD()
     route("/treasure") {
         get {
             val listOfTreasures = treasureCrud.selectAllTreasures()
@@ -49,6 +51,7 @@ fun Route.treasureRouting() {
 
                 //TODO
                 //Buscar en games, reports, reviews y favs por idTreasure y construir TreasureStats()
+               val gamesPlayed = gameCrud
                 val totalFavourites = favouriteCrud.selectAllFavouritesByTreasureID(treasureID.toInt()).size
 
 
