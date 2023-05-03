@@ -4,12 +4,12 @@ import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Table
 
 @Serializable
-data class Favourite(
+data class Favourites(
     val idUser: Int,
     val idTreasure: Int
 )
 
-object Favourites: Table(){
+object Favourite: Table(){
     val idUser = integer("id_user")
     val idTreasure = integer("treasure_id")
 }
