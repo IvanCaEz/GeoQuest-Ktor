@@ -167,25 +167,28 @@ fun Route.userRouting() {
             var totalNotSolved = 0
 
             val listOfGames = gameCrud.selectAllUserGames(userID.toInt())
-            for (i in listOfGames.indices){
-                if (listOfGames[i].solved) totalSolved++
-                else totalNotSolved++
+            if (listOfGames.isNotEmpty()){
+                for (i in listOfGames.indices){
+                    if (listOfGames[i].solved) totalSolved++
+                    else totalNotSolved++
+                }
+
+                val reportQuantity = ReportCRUD().selectAllReportByUserId(userID.toInt()).size
+                var difference = 0L
+                listOfGames.forEach { game ->
+                    difference += Duration.between(game.timeStart, game.timeEnd).toMillis()
+                }
+                val time = difference / listOfGames.size
+
+                val hours = TimeUnit.MILLISECONDS.toHours(time)
+                val minutes = TimeUnit.MILLISECONDS.toMinutes(time) % 60
+                val seconds = TimeUnit.MILLISECONDS.toSeconds(time) % 60
+                val averageTime = "$hours:$minutes:$seconds"
+
+                val userStats = UserStats(userID.toInt(), totalSolved, totalNotSolved, reportQuantity, averageTime)
+                call.respond(userStats)
             }
 
-            val reportQuantity = ReportCRUD().selectAllReportByUserId(userID.toInt()).size
-            var difference = 0L
-            listOfGames.forEach { game ->
-                difference += Duration.between(game.timeStart, game.timeEnd).toMillis()
-            }
-            val time = difference / listOfGames.size
-
-            val hours = TimeUnit.MILLISECONDS.toHours(time)
-            val minutes = TimeUnit.MILLISECONDS.toMinutes(time) % 60
-            val seconds = TimeUnit.MILLISECONDS.toSeconds(time) % 60
-            val averageTime = "$hours:$minutes:$seconds"
-
-            val userStats = UserStats(userID.toInt(), totalSolved, totalNotSolved, reportQuantity, averageTime)
-            call.respond(userStats)
         }
 
 

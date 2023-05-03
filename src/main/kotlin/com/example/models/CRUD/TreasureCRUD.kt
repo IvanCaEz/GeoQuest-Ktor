@@ -27,6 +27,7 @@ class TreasureCRUD: TreasureDAO {
             it[image] = treasureToAdd.image
             it[latitude] = treasureToAdd.latitude
             it[longitude] = treasureToAdd.longitude
+            it[location] = treasureToAdd.location
             it[clue] = treasureToAdd.clue
             it[difficulty] = treasureToAdd.difficulty
         }

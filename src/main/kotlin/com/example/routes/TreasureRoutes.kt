@@ -10,6 +10,8 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FileNotFoundException
 import java.time.Duration
@@ -41,6 +43,21 @@ fun Route.treasureRouting() {
                 "Treasure with id $treasureID not found.",
                 status = HttpStatusCode.NotFound
             )
+        }
+
+        get("{treasureID}/picture"){
+            var treasureImage: File = File("")
+            val treasureID = call.parameters["treasureID"]
+            if (treasureID.isNullOrBlank()) return@get call.respondText("Missing treasure id.",
+                status = HttpStatusCode.BadRequest)
+
+            val treasurePhoto = treasureCrud.selectTreasureByID(treasureID.toInt())!!.image
+            treasureImage = File("src/main/kotlin/com/example/treasure_pictures/$treasurePhoto")
+            if (treasureImage.exists()){
+                call.respondFile(treasureImage)
+            } else {
+                call.respondText("No image found.", status = HttpStatusCode.NotFound)
+            }
         }
 
         get("{treasureID}/stats") {
@@ -87,7 +104,7 @@ fun Route.treasureRouting() {
             treasureData.forEachPart { part ->
                 when (part) {
                     is PartData.FormItem -> {
-                        treasureToAdd = gson.fromJson(part.value, Treasures::class.java)
+                        treasureToAdd = Json.decodeFromString(part.value)
                     }
                     is PartData.FileItem -> {
                         try {
