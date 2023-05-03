@@ -24,5 +24,8 @@ interface GameDAO {
     suspend fun postGame(gameToAdd: Game): Game?
     suspend fun putGame(gameToUpdate: Game): Boolean
     suspend fun deleteGame(idGame: Int): Boolean
+    suspend fun deleteUserGames(idUser: Int): Boolean
+    suspend fun deleteTreasureGame(idTreasure: Int): Boolean
+
 
 }

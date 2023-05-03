@@ -21,5 +21,5 @@ object Reviews: Table(){
     val opinion = varchar("review_opinion", 1000)
     val rating = integer("review_rating")
     val photo = varchar("review_photo", 1000)
-    override val primaryKey = PrimaryKey(Reviews.idReview, name = "review_pkey")
+    override val primaryKey = PrimaryKey(idReview, name = "review_pkey")
 }

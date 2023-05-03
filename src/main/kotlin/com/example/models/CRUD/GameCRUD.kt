@@ -20,24 +20,47 @@ class GameCRUD: GameDAO {
             .singleOrNull()
     }
 
-    override suspend fun selectAllUserGames(idUser: Int): List<Game>? {
-        TODO("Not yet implemented")
+    override suspend fun selectAllUserGames(idUser: Int): List<Game> = dbQuery {
+        Games
+            .select { Games.idUser eq idUser }
+            .map(::resultRowToGame)
     }
 
-    override suspend fun selectAllTreasureGames(idTreasure: Int): List<Game>? {
-        TODO("Not yet implemented")
+    override suspend fun selectAllTreasureGames(idTreasure: Int): List<Game> = dbQuery {
+        Games
+            .select { Games.idTreasure eq idTreasure }
+            .map(::resultRowToGame)
     }
 
-    override suspend fun postGame(gameToAdd: Game): Game? {
-        TODO("Not yet implemented")
+    override suspend fun postGame(gameToAdd: Game): Game?  = dbQuery {
+        val insertStatement = Games.insert {
+            it[idTreasure] = gameToAdd.idTreasure
+            it[idUser] = gameToAdd.idUser
+            it[solved] = gameToAdd.solved
+            it[timeStart] = gameToAdd.timeStart
+            it[timeEnd] = gameToAdd.timeEnd
+        }
+        insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToGame)
     }
 
-    override suspend fun putGame(gameToUpdate: Game): Boolean {
-        TODO("Not yet implemented")
+    override suspend fun putGame(gameToUpdate: Game): Boolean = dbQuery {
+        Games.update ({ Games.idGame eq gameToUpdate.idGame } ){
+            it[idTreasure] = gameToUpdate.idTreasure
+            it[idUser] = gameToUpdate.idUser
+            it[solved] = gameToUpdate.solved
+            it[timeStart] = gameToUpdate.timeStart
+            it[timeEnd] = gameToUpdate.timeEnd
+        } > 0
+    }
+    override suspend fun deleteGame(idGame: Int): Boolean  = dbQuery {
+        Games.deleteWhere { Games.idGame eq idGame } > 0
+    }
+    override suspend fun deleteUserGames(idUser: Int): Boolean  = dbQuery {
+        Games.deleteWhere { Games.idUser eq idUser } > 0
+    }
+    override suspend fun deleteTreasureGame(idTreasure: Int): Boolean  = dbQuery {
+        Games.deleteWhere { Games.idTreasure eq idTreasure } > 0
     }
 
-    override suspend fun deleteGame(idGame: Int): Boolean {
-        TODO("Not yet implemented")
-    }
 
 }

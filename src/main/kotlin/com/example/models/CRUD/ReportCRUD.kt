@@ -33,4 +33,14 @@ class ReportCRUD : ReportDAO {
     override suspend fun deleteReport(idReport: Int): Boolean = dbQuery {
         Reports.deleteWhere { Reports.idReport eq idReport } > 0
     }
+
+    override suspend fun deleteReportsOfTreasure(idTreasure: Int): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteReportsOfUser(idUser: Int): Boolean {
+        TODO("Not yet implemented")
+    }
+
+
 }

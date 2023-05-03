@@ -51,9 +51,15 @@ fun Route.treasureRouting() {
 
                 //TODO
                 //Buscar en games, reports, reviews y favs por idTreasure y construir TreasureStats()
-               val gamesPlayed = gameCrud
+
+                val games = gameCrud.selectAllTreasureGames(treasureID.toInt())
+                val gamesPlayed = games.count()
+                val gamesSolved = games.count { it.solved }
+                val gamesNotSolved = games.count { !it.solved }
+
                 val totalFavourites = favouriteCrud.selectAllFavouritesByTreasureID(treasureID.toInt()).size
 
+                //TreasureStats(treasureID.toInt(), gamesPlayed, gamesSolved, gamesNotSolved)
 
             } else call.respondText(
                 "Treasure with id $treasureID not found.",
@@ -65,13 +71,15 @@ fun Route.treasureRouting() {
             val treasureData = call.receiveMultipart()
             var treasureToAdd = Treasure(
                 0, "", "", "", 0.0, 0.0,
-                "", "", "", "", 0.0)
+                "", "", "", "", 0.0
+            )
             val gson = Gson()
             treasureData.forEachPart { part ->
                 when (part) {
                     is PartData.FormItem -> {
                         treasureToAdd = gson.fromJson(part.value, Treasure::class.java)
                     }
+
                     is PartData.FileItem -> {
                         try {
                             treasureToAdd.image = part.originalFileName as String
@@ -82,6 +90,7 @@ fun Route.treasureRouting() {
                             println("Error ${e.message}")
                         }
                     }
+
                     else -> {}
                 }
                 println("Subido ${part.name}")
@@ -101,17 +110,19 @@ fun Route.treasureRouting() {
             val treasureData = call.receiveMultipart()
             var treasureToUpdate = Treasure(
                 0, "", "", "", 0.0, 0.0,
-                "", "", "", "", 0.0)
+                "", "", "", "", 0.0
+            )
             val gson = Gson()
             treasureData.forEachPart { part ->
                 when (part) {
                     is PartData.FormItem -> {
                         treasureToUpdate = gson.fromJson(part.value, Treasure::class.java)
                     }
+
                     is PartData.FileItem -> {
                         try {
                             treasureToUpdate.image = part.originalFileName as String
-                            if (treasureToUpdate.image != treasureCrud.selectTreasureByID(treasureID.toInt())!!.image){
+                            if (treasureToUpdate.image != treasureCrud.selectTreasureByID(treasureID.toInt())!!.image) {
                                 val fileBytes = part.streamProvider().readBytes()
                                 File("src/main/kotlin/com/example/treasure_pictures/" + treasureToUpdate.image)
                                     .writeBytes(fileBytes)
@@ -120,6 +131,7 @@ fun Route.treasureRouting() {
                             println("Error ${e.message}")
                         }
                     }
+
                     else -> {}
                 }
                 println("Subido ${part.name}")
@@ -131,15 +143,18 @@ fun Route.treasureRouting() {
                 status = HttpStatusCode.Created
             )
         }
-        delete("{treasureID}"){
+        delete("{treasureID}") {
             val treasureID = call.parameters["treasureID"]
             if (treasureID.isNullOrBlank()) return@delete call.respondText(
                 "Missing treasure id.", status = HttpStatusCode.BadRequest
             )
-            //TODO() Eliminar games, reviews y reports
+            //TODO() Eliminar, reviews y reports
+            gameCrud.deleteTreasureGame(treasureID.toInt())
             treasureCrud.deleteTreasure(treasureID.toInt())
-            call.respondText("Treasure with id $treasureID has been deleted.",
-                status = HttpStatusCode.OK)
+            call.respondText(
+                "Treasure with id $treasureID has been deleted.",
+                status = HttpStatusCode.OK
+            )
 
         }
     }

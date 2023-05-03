@@ -1,6 +1,7 @@
 package com.example.routes
 
 import com.example.models.CRUD.FavouriteCRUD
+import com.example.models.CRUD.GameCRUD
 import com.example.models.CRUD.TreasureCRUD
 import com.example.models.CRUD.UserCRUD
 import com.example.models.Game
@@ -126,6 +127,7 @@ fun Route.userRouting() {
             //TODO() Eliminar games, reviews y reports
 
             // Luego eliminamos el user
+            GameCRUD().deleteUserGames(userID.toInt())
             userCrud.deleteUser(userID.toInt())
             call.respondText("User with id $userID has been deleted.",
                 status = HttpStatusCode.OK)
