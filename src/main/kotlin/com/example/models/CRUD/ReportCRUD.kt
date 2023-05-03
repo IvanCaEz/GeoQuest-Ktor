@@ -20,17 +20,28 @@ class ReportCRUD : ReportDAO {
             .singleOrNull()
     }
 
+    override suspend fun selectTreasureReportByUserID(idUser: Int, idReport: Int): Reports? = dbQuery  {
+        Report
+            .select {  (Report.idReport eq idReport) and (Report.idTreasure eq idUser) }
+            .map(::resultRowToReport)
+            .singleOrNull()
+    }
+
+    override suspend fun selectAllReports(): List<Reports> = dbQuery {
+        Report.selectAll().map(::resultRowToReport)
+    }
+
     override suspend fun selectAllReportByUserId(userId: Int): List<Reports> = dbQuery {
         Report.select { Report.idUser eq userId }
             .map(::resultRowToReport)
     }
 
-    override suspend fun postReport(reportsToAdd: Reports): Reports? = dbQuery {
+    override suspend fun postReport(reportToAdd: Reports): Reports? = dbQuery {
         val insertStatement = Report.insert {
-            it[idUser] = reportsToAdd.idUser
-            it[idTreasure] = reportsToAdd.idTreasure
-            it[reportInfo] = reportsToAdd.reportInfo
-            it[reportDate] = reportsToAdd.reportDate
+            it[idUser] = reportToAdd.idUser
+            it[idTreasure] = reportToAdd.idTreasure
+            it[reportInfo] = reportToAdd.reportInfo
+            it[reportDate] = reportToAdd.reportDate
         }
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToReport)
     }

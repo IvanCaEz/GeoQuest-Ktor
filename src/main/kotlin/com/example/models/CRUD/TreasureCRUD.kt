@@ -2,9 +2,7 @@ package com.example.models.CRUD
 
 import com.example.database.DatabaseFactory.dbQuery
 import com.example.database.TreasureDAO
-import com.example.models.Treasure
-import com.example.models.Treasures
-import com.example.models.Users
+import com.example.models.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
@@ -18,6 +16,13 @@ class TreasureCRUD: TreasureDAO {
             .select { Treasure.idTreasure eq idTreasure }
             .map(::resultRowToTreasure)
             .singleOrNull()
+    }
+
+    override suspend fun selectAllTreasuresSolvedByUser(idUser: Int): List<Treasures>  = dbQuery {
+        Treasure
+            .select { (Game.idUser eq idUser) and (Game.solved eq true) }
+            .map(::resultRowToTreasure)
+
     }
 
     override suspend fun addNewTreasure(treasureToAdd: Treasures): Treasures? = dbQuery {
@@ -50,6 +55,13 @@ class TreasureCRUD: TreasureDAO {
 
     override suspend fun deleteTreasure(idTreasure: Int): Boolean = dbQuery {
         Treasure.deleteWhere { Treasure.idTreasure eq idTreasure } > 0
+    }
+
+    override suspend fun setScore(idTreasure: Int): Double = dbQuery{
+        val reviews = ReviewCRUD().selectAllTreasureReviews(idTreasure)
+        if (reviews.isNotEmpty()){
+            reviews.sumOf { review -> review.rating.toDouble() } / reviews.size
+        } else 0.0
     }
 
 }

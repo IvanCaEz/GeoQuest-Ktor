@@ -4,6 +4,7 @@ import com.example.database.DatabaseFactory.dbQuery
 import com.example.database.ReviewDAO
 import com.example.models.Reviews
 import com.example.models.Review
+import com.example.models.Treasure
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
@@ -14,11 +15,24 @@ class ReviewCRUD: ReviewDAO {
             .map(::resultRowToReview)
     }
 
-    // No sabemos si se va a utilizar
-    override suspend fun selectAllTreasureReviewsByUser(idTreasure: Int, idUser: Int): List<Reviews> = dbQuery {
+    override suspend fun selectAllTreasureReviewsByUser(idUser: Int): List<Reviews> = dbQuery {
         Review
-            .select { Review.idTreasure eq idTreasure and (Review.idUser eq idUser) }
+            .select {Review.idUser eq idUser }
             .map(::resultRowToReview)
+    }
+
+    override suspend fun selectReviewByUser(idUser: Int, idReview: Int): Reviews? = dbQuery {
+        Review
+            .select { (Review.idUser eq idUser) and (Review.idReview eq idReview) }
+            .map(::resultRowToReview)
+            .singleOrNull()
+    }
+
+    override suspend fun selectReviewOfTreasure(idTreasure: Int, idReview: Int): Reviews? = dbQuery {
+        Review
+            .select { (Review.idTreasure eq idTreasure) and (Review.idReview eq idReview) }
+            .map(::resultRowToReview)
+            .singleOrNull()
     }
 
     override suspend fun postReview(reviewsToAdd: Reviews): Reviews? = dbQuery {
@@ -40,8 +54,9 @@ class ReviewCRUD: ReviewDAO {
         } > 0
     }
 
-    override suspend fun deleteReview(idReview: Int): Boolean = dbQuery {
-        Review.deleteWhere { Review.idReview eq idReview } > 0
+    override suspend fun deleteReview(idTreasure: Int, idReview: Int): Boolean = dbQuery {
+        Review.deleteWhere { (Review.idReview eq idReview) and
+                    (Review.idTreasure eq idTreasure) } > 0
     }
 
     override suspend fun deleteReviewsOfTreasure(idTreasure: Int): Boolean = dbQuery {

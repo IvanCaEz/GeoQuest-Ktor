@@ -1,5 +1,6 @@
 package com.example.plugins
 
+import com.example.routes.reportRouting
 import com.example.routes.treasureRouting
 import com.example.routes.userRouting
 import io.ktor.server.routing.*
@@ -15,5 +16,6 @@ fun Application.configureRouting() {
     routing {
         userRouting()
         treasureRouting()
+        reportRouting()
     }
 }

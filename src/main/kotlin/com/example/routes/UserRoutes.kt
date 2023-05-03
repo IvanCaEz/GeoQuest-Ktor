@@ -19,6 +19,8 @@ fun Route.userRouting() {
     val favCrud = FavouriteCRUD()
     val treasureCrud = TreasureCRUD()
     val gameCrud = GameCRUD()
+    val reviewCrud = ReviewCRUD()
+    val reportCrud = ReportCRUD()
     route("/user") {
         post("/login") {
             // recibimos este formato username,password
@@ -122,9 +124,9 @@ fun Route.userRouting() {
                 favCrud.deleteFavourite(userID.toInt(), fav.idTreasure)
             }
             // Eliminamos lo asociado al user y luego eliminamos el user
-            ReportCRUD().deleteReportsOfUser(userID.toInt())
-            ReviewCRUD().deleteReviewsOfUser(userID.toInt())
-            GameCRUD().deleteUserGames(userID.toInt())
+            reportCrud.deleteReportsOfUser(userID.toInt())
+            reviewCrud.deleteReviewsOfUser(userID.toInt())
+            gameCrud.deleteUserGames(userID.toInt())
             userCrud.deleteUser(userID.toInt())
             call.respondText("User with id $userID has been deleted.",
                 status = HttpStatusCode.OK)
@@ -173,7 +175,7 @@ fun Route.userRouting() {
                     else totalNotSolved++
                 }
 
-                val reportQuantity = ReportCRUD().selectAllReportByUserId(userID.toInt()).size
+                val reportQuantity = reportCrud.selectAllReportByUserId(userID.toInt()).size
                 var difference = 0L
                 listOfGames.forEach { game ->
                     difference += Duration.between(game.timeStart, game.timeEnd).toMillis()
@@ -187,8 +189,64 @@ fun Route.userRouting() {
 
                 val userStats = UserStats(userID.toInt(), totalSolved, totalNotSolved, reportQuantity, averageTime)
                 call.respond(userStats)
-            }
+            } else call.respond(UserStats(userID.toInt(),0,0,0,"00:00:00",))
 
+        }
+
+        get("{userID}/reviews") {
+            val userID = call.parameters["userID"]
+            if (userID.isNullOrBlank()) return@get call.respondText(
+                "Missing user id.", status = HttpStatusCode.BadRequest)
+            val reviews = reviewCrud.selectAllTreasureReviewsByUser(userID.toInt())
+            if (reviews.isNotEmpty()) {
+                call.respond(reviews)
+            } else call.respondText(
+                "User with id $userID hasn't made any reviews yet.", status = HttpStatusCode.NotFound)
+        }
+        get("{userID}/reviews/{reviewID}") {
+            val userID = call.parameters["userID"]
+            val reviewID = call.parameters["reviewID"]
+
+            if (userID.isNullOrBlank()) return@get call.respondText(
+                "Missing user id.", status = HttpStatusCode.BadRequest)
+            if (reviewID.isNullOrBlank()) return@get call.respondText(
+                "Missing review id.", status = HttpStatusCode.BadRequest)
+
+            val review = reviewCrud.selectReviewByUser(userID.toInt(), reviewID.toInt())
+            if (review != null) {
+                call.respond(review)
+            } else call.respondText("User with id $userID and review with id $reviewID not found.",
+                status = HttpStatusCode.NotFound)
+        }
+
+        get("{userID}/reports") {
+            val userID = call.parameters["userID"]
+            if (userID.isNullOrBlank()) return@get call.respondText(
+                "Missing user id.", status = HttpStatusCode.BadRequest)
+            val reports = reportCrud.selectAllTreasureReports(userID.toInt())
+            if (reports.isNotEmpty()) {
+                call.respond(reports)
+            } else call.respondText("User with id $userID hasn't made any reports yet.",
+                status = HttpStatusCode.Accepted)
+        }
+
+        get("{userID}/reports/{reportID}") {
+            val userID = call.parameters["userID"]
+            val reportID = call.parameters["reportID"]
+
+            if (userID.isNullOrBlank()) return@get call.respondText(
+                "Missing user id.", status = HttpStatusCode.BadRequest
+            )
+            if (reportID.isNullOrBlank()) return@get call.respondText(
+                "Missing report id.", status = HttpStatusCode.BadRequest
+            )
+            val report = reportCrud.selectTreasureReportByUserID(userID.toInt(), reportID.toInt())
+            if (report != null) {
+                call.respond(report)
+            } else call.respondText(
+                "Report with id $report made by user with id $userID not found.",
+                status = HttpStatusCode.NotFound
+            )
         }
 
 
@@ -196,6 +254,11 @@ fun Route.userRouting() {
             val userID = call.parameters["userID"]
             if (userID.isNullOrBlank()) return@get call.respondText("Missing user id.",
                 status = HttpStatusCode.BadRequest)
+            val treasuresSolved = treasureCrud.selectAllTreasuresSolvedByUser(userID.toInt())
+            if (treasuresSolved.isNotEmpty()){
+                call.respond(treasuresSolved)
+            } else call.respondText("User with id $userID hasn't solved any treasures yet.",
+                status = HttpStatusCode.Accepted)
         }
 
 
@@ -206,7 +269,8 @@ fun Route.userRouting() {
             val favList = favCrud.selectAllFavouritesByUserID(userID.toInt())
             if (favList.isNotEmpty()){
                 call.respond(favList)
-            } else call.respondText("User with id $userID hasn't mark any treasure as favourite.")
+            } else call.respondText("User with id $userID hasn't mark any treasure as favourite.",
+                status = HttpStatusCode.Accepted)
         }
         post("{userID}/favs"){
             val userID = call.parameters["userID"]
@@ -224,7 +288,24 @@ fun Route.userRouting() {
             if (treasureID.isNullOrBlank()) return@delete call.respondText("Missing treasure id.",
                 status = HttpStatusCode.BadRequest)
             favCrud.deleteFavourite(userID.toInt(), treasureID.toInt())
-            call.respondText("Treasure with id $treasureID deleted from user with id $userID list of favorites.")
+            call.respondText("Treasure with id $treasureID deleted from user with id $userID list of favorites.",
+                status = HttpStatusCode.OK)
+        }
+
+        delete("{userID}/reports/{reportID}"){
+            val userID = call.parameters["userID"]
+            val reportID = call.parameters["reportID"]
+            if (userID.isNullOrBlank()) return@delete call.respondText(
+                "Missing user id.", status = HttpStatusCode.BadRequest
+            )
+            if (reportID.isNullOrBlank()) return@delete call.respondText(
+                "Missing report id.", status = HttpStatusCode.BadRequest
+            )
+            reportCrud.deleteReport(reportID.toInt())
+            call.respondText(
+                "Report with id $reportID of user with id $userID has been deleted.",
+                status = HttpStatusCode.OK
+            )
         }
 
     }

@@ -1,0 +1,4 @@
+TESORO
+{"idTreasure":0,"name":"ITB","description":"Tesoro en clase","image":"placeholder_map.png","latitude":0.0,"longitude":0.0,"location":"Barcelona","clue":"Entre cables","status":"GOOD","difficulty":"NOOB","score":0.0}
+REVIEW
+{"idReview":0,"idTreasure":3,"idUser":1,"opinion":"Me ha costado encontrarlo","rating":3,"photo":"placeholder_review.png"}

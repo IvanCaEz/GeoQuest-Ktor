@@ -30,7 +30,7 @@ object DatabaseFactory {
 
             runBlocking {
 
-                val userToUpdate = User(1, "Alejandro", "ale@jandro.com", "123456", "placeholder.png", "Noob", "Admin", listOf())
+                val userToUpdate = User(1, "Alejandro", "ale@jandro.com", "123456", "placeholder_review.png", "Noob", "Admin", listOf())
 
             }
         }

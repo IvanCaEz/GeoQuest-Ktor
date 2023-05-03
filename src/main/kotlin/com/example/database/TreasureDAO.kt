@@ -24,7 +24,11 @@ interface TreasureDAO {
 
     suspend fun selectAllTreasures(): List<Treasures>
     suspend fun selectTreasureByID(idTreasure: Int): Treasures?
+    suspend fun selectAllTreasuresSolvedByUser(idUser: Int): List<Treasures>
+
     suspend fun addNewTreasure(treasureToAdd: Treasures): Treasures?
     suspend fun updateTreasure(treasureToUpdate: Treasures): Boolean
     suspend fun deleteTreasure(idTreasure: Int): Boolean
+
+    suspend fun setScore(idTreasure: Int): Double
 }

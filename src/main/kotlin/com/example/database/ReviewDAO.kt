@@ -14,10 +14,13 @@ interface ReviewDAO {
         photo = row[Review.photo]
     )
     suspend fun selectAllTreasureReviews(idTreasure: Int): List<Reviews>
-    suspend fun selectAllTreasureReviewsByUser(idTreasure: Int, idUser: Int): List<Reviews>
+    suspend fun selectAllTreasureReviewsByUser(idUser: Int): List<Reviews>
+    suspend fun selectReviewByUser(idUser: Int, idReview: Int): Reviews?
+    suspend fun selectReviewOfTreasure(idTreasure: Int, idReview: Int): Reviews?
+
     suspend fun postReview(reviewsToAdd: Reviews): Reviews?
     suspend fun updateReview(reviewsToUpdate: Reviews): Boolean
-    suspend fun deleteReview(idReview: Int): Boolean
+    suspend fun deleteReview(idTreasure: Int, idReview: Int): Boolean
     suspend fun deleteReviewsOfTreasure(idTreasure: Int): Boolean
     suspend fun deleteReviewsOfUser(idUser: Int): Boolean
 

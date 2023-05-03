@@ -14,8 +14,11 @@ interface ReportDAO {
 
     suspend fun selectAllTreasureReports(idTreasure: Int): List<Reports>
     suspend fun selectTreasureReportByID(idTreasure: Int, idReport: Int): Reports?
+    suspend fun selectTreasureReportByUserID(idUser: Int, idReport: Int): Reports?
+    suspend fun selectAllReports(): List<Reports>
+
     suspend fun selectAllReportByUserId(userId: Int): List<Reports>
-    suspend fun postReport(reportsToAdd: Reports): Reports?
+    suspend fun postReport(reportToAdd: Reports): Reports?
     suspend fun deleteReport(idReport: Int): Boolean
     suspend fun deleteReportsOfTreasure(idTreasure: Int): Boolean
     suspend fun deleteReportsOfUser(idUser: Int): Boolean
