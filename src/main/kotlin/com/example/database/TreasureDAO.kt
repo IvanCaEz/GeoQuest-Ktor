@@ -27,5 +27,4 @@ interface TreasureDAO {
     suspend fun addNewTreasure(treasureToAdd: Treasure): Treasure?
     suspend fun updateTreasure(treasureToUpdate: Treasure): Boolean
     suspend fun deleteTreasure(idTreasure: Int): Boolean
-
 }

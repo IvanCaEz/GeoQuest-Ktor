@@ -46,6 +46,7 @@ class TreasureCRUD: TreasureDAO {
             it[status] = treasureToUpdate.status
         } > 0
     }
+
     override suspend fun deleteTreasure(idTreasure: Int): Boolean = dbQuery {
         Treasures.deleteWhere { Treasures.idTreasure eq idTreasure } > 0
     }

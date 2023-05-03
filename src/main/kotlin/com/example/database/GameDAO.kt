@@ -3,6 +3,7 @@ package com.example.database
 import com.example.models.*
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
+import java.util.*
 
 interface GameDAO {
     fun resultRowToGame(row: ResultRow) = Game(
@@ -26,6 +27,5 @@ interface GameDAO {
     suspend fun deleteGame(idGame: Int): Boolean
     suspend fun deleteUserGames(idUser: Int): Boolean
     suspend fun deleteTreasureGame(idTreasure: Int): Boolean
-
 
 }

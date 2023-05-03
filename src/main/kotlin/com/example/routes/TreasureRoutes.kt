@@ -1,11 +1,8 @@
 package com.example.routes
 
-import com.example.models.CRUD.FavouriteCRUD
-import com.example.models.CRUD.GameCRUD
-import com.example.models.CRUD.TreasureCRUD
+import com.example.models.CRUD.*
 import com.example.models.Treasure
 import com.example.models.TreasureStats
-import com.example.models.User
 import com.google.gson.Gson
 import io.ktor.http.*
 import io.ktor.http.content.*
@@ -19,6 +16,8 @@ import java.io.FileNotFoundException
 fun Route.treasureRouting() {
     val treasureCrud = TreasureCRUD()
     val favouriteCrud = FavouriteCRUD()
+    val reviewCrud = ReviewCRUD()
+    val reportCrud = ReportCRUD()
     val gameCrud = GameCRUD()
     route("/treasure") {
         get {
@@ -49,15 +48,22 @@ fun Route.treasureRouting() {
             val treasure = treasureCrud.selectTreasureByID(treasureID.toInt())
             if (treasure != null) {
 
-                //TODO
-                //Buscar en games, reports, reviews y favs por idTreasure y construir TreasureStats()
-
                 val games = gameCrud.selectAllTreasureGames(treasureID.toInt())
-                val gamesPlayed = games.count()
-                val gamesSolved = games.count { it.solved }
-                val gamesNotSolved = games.count { !it.solved }
-
+                // Buscar en games, reports, reviews y favs por idTreasure y construir TreasureStats()
+                /*
+                    val idTreasure: Int,
+                    val totalPlayed: Int,
+                    val totalFound: Int,
+                    val totalFavourite: Int,
+                    val totalReviews: Int,
+                    val reportQuantity: Int,
+                    val averageTime: Double
+                */
+                val totalPlayed = games.count()
+                val totalFound = games.count { it.solved }
                 val totalFavourites = favouriteCrud.selectAllFavouritesByTreasureID(treasureID.toInt()).size
+
+                //val treasureStats = TreasureStats(treasureID.toInt(), totalPlayed, totalFound, totalFavourites, )
 
 
             } else call.respondText(
@@ -141,14 +147,15 @@ fun Route.treasureRouting() {
             if (treasureID.isNullOrBlank()) return@delete call.respondText(
                 "Missing treasure id.", status = HttpStatusCode.BadRequest
             )
-            //TODO() Eliminar, reviews y reports
+            //Eliminar, game, reviews y reports
             gameCrud.deleteTreasureGame(treasureID.toInt())
+            reviewCrud.deleteAllReviewsByTreasureId(treasureID.toInt())
+            reportCrud.deleteReportsOfTreasure(treasureID.toInt())
             treasureCrud.deleteTreasure(treasureID.toInt())
             call.respondText(
                 "Treasure with id $treasureID has been deleted.",
                 status = HttpStatusCode.OK
             )
-
         }
     }
 

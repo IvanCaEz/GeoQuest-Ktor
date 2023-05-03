@@ -1,12 +1,9 @@
 package com.example.models.CRUD
 
-import com.example.database.DatabaseFactory
 import com.example.database.DatabaseFactory.dbQuery
 import com.example.database.ReviewDAO
-import com.example.models.Reports
 import com.example.models.Review
 import com.example.models.Reviews
-import com.example.models.Treasures
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
@@ -45,5 +42,9 @@ class ReviewCRUD: ReviewDAO {
 
     override suspend fun deleteReview(idReview: Int): Boolean = dbQuery {
         Reviews.deleteWhere { Reviews.idReview eq idReview } > 0
+    }
+
+    suspend fun deleteAllReviewsByTreasureId(treasureId: Int): Boolean = dbQuery {
+        Reviews.deleteWhere { Reviews.idTreasure eq treasureId } > 0
     }
 }
