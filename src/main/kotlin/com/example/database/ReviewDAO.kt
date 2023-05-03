@@ -20,4 +20,7 @@ interface ReviewDAO {
     suspend fun postReview(reviewToAdd: Review): Review?
     suspend fun updateReview(reviewToUpdate: Review): Boolean
     suspend fun deleteReview(idReview: Int): Boolean
+    suspend fun deleteReviewsOfTreasure(idTreasure: Int): Boolean
+    suspend fun deleteReviewsOfUser(idUser: Int): Boolean
+
 }

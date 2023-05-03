@@ -1,8 +1,6 @@
 package com.example.routes
 
-import com.example.models.CRUD.FavouriteCRUD
-import com.example.models.CRUD.GameCRUD
-import com.example.models.CRUD.TreasureCRUD
+import com.example.models.CRUD.*
 import com.example.models.Treasure
 import com.example.models.TreasureStats
 import com.example.models.User
@@ -141,7 +139,9 @@ fun Route.treasureRouting() {
             if (treasureID.isNullOrBlank()) return@delete call.respondText(
                 "Missing treasure id.", status = HttpStatusCode.BadRequest
             )
-            //TODO() Eliminar, reviews y reports
+            // Eliminamos lo asociado al treasure y luego eliminamos el treasure
+            ReviewCRUD().deleteReviewsOfTreasure(treasureID.toInt())
+            ReportCRUD().deleteReportsOfTreasure(treasureID.toInt())
             gameCrud.deleteTreasureGame(treasureID.toInt())
             treasureCrud.deleteTreasure(treasureID.toInt())
             call.respondText(

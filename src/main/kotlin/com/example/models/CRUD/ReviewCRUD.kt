@@ -46,4 +46,12 @@ class ReviewCRUD: ReviewDAO {
     override suspend fun deleteReview(idReview: Int): Boolean = dbQuery {
         Reviews.deleteWhere { Reviews.idReview eq idReview } > 0
     }
+
+    override suspend fun deleteReviewsOfTreasure(idTreasure: Int): Boolean = dbQuery {
+        Reviews.deleteWhere { Reviews.idTreasure eq idTreasure } > 0
+    }
+
+    override suspend fun deleteReviewsOfUser(idUser: Int): Boolean = dbQuery {
+        Reviews.deleteWhere { Reviews.idUser eq idUser } > 0
+    }
 }
