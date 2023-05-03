@@ -4,11 +4,10 @@ import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.`java-time`.timestamp
-import java.sql.Timestamp
 import java.time.Instant
 
 @Serializable
-data class Game(
+data class Games(
     val idGame: Int,
     val idTreasure: Int,
     val idUser: Int,
@@ -17,7 +16,7 @@ data class Game(
     @Contextual var timeEnd: Instant
 
 )
-object Games: Table(){
+object Game: Table(){
     val idGame = integer("game_id").autoIncrement("game_id_seq")
     val idTreasure = integer("treasure_id").references(Treasure.idTreasure)
     val idUser = integer("id_user").references(Users.idUser)

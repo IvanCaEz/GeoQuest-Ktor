@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Table
 
 @Serializable
-data class Review (
+data class Reviews (
     val idReview: Int,
     val idTreasure: Int,
     val idUser: Int,
@@ -12,7 +12,7 @@ data class Review (
     var rating: Int,
     var photo: String
 )
-object Reviews: Table(){
+object Review: Table(){
     val idReview = integer("id_review").autoIncrement("id_review_seq")
     val idTreasure = integer("id_treasure").references(Treasure.idTreasure)
     val idUser = integer("id_user").references(Users.idUser)

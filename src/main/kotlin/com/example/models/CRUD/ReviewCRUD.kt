@@ -2,54 +2,54 @@ package com.example.models.CRUD
 
 import com.example.database.DatabaseFactory.dbQuery
 import com.example.database.ReviewDAO
-import com.example.models.Review
 import com.example.models.Reviews
+import com.example.models.Review
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class ReviewCRUD: ReviewDAO {
-    override suspend fun selectAllTreasureReviews(idTreasure: Int): List<Review> = dbQuery {
-        Reviews
-            .select { Reviews.idTreasure eq idTreasure }
+    override suspend fun selectAllTreasureReviews(idTreasure: Int): List<Reviews> = dbQuery {
+        Review
+            .select { Review.idTreasure eq idTreasure }
             .map(::resultRowToReview)
     }
 
     // No sabemos si se va a utilizar
-    override suspend fun selectAllTreasureReviewsByUser(idTreasure: Int, idUser: Int): List<Review> = dbQuery {
-        Reviews
-            .select { Reviews.idTreasure eq idTreasure and (Reviews.idUser eq idUser) }
+    override suspend fun selectAllTreasureReviewsByUser(idTreasure: Int, idUser: Int): List<Reviews> = dbQuery {
+        Review
+            .select { Review.idTreasure eq idTreasure and (Review.idUser eq idUser) }
             .map(::resultRowToReview)
     }
 
-    override suspend fun postReview(reviewToAdd: Review): Review? = dbQuery {
-        val insertStatement = Reviews.insert {
-            it[idTreasure] = reviewToAdd.idTreasure
-            it[idUser] = reviewToAdd.idUser
-            it[opinion] = reviewToAdd.opinion
-            it[rating] = reviewToAdd.rating
-            it[photo] = reviewToAdd.photo
+    override suspend fun postReview(reviewsToAdd: Reviews): Reviews? = dbQuery {
+        val insertStatement = Review.insert {
+            it[idTreasure] = reviewsToAdd.idTreasure
+            it[idUser] = reviewsToAdd.idUser
+            it[opinion] = reviewsToAdd.opinion
+            it[rating] = reviewsToAdd.rating
+            it[photo] = reviewsToAdd.photo
         }
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToReview)
     }
 
-    override suspend fun updateReview(reviewToUpdate: Review): Boolean = dbQuery {
-        Reviews.update ({ Reviews.idReview eq reviewToUpdate.idReview }){
-            it[opinion] = reviewToUpdate.opinion
-            it[rating] = reviewToUpdate.rating
-            it[photo] = reviewToUpdate.photo
+    override suspend fun updateReview(reviewsToUpdate: Reviews): Boolean = dbQuery {
+        Review.update ({ Review.idReview eq reviewsToUpdate.idReview }){
+            it[opinion] = reviewsToUpdate.opinion
+            it[rating] = reviewsToUpdate.rating
+            it[photo] = reviewsToUpdate.photo
         } > 0
     }
 
     override suspend fun deleteReview(idReview: Int): Boolean = dbQuery {
-        Reviews.deleteWhere { Reviews.idReview eq idReview } > 0
+        Review.deleteWhere { Review.idReview eq idReview } > 0
     }
 
     override suspend fun deleteReviewsOfTreasure(idTreasure: Int): Boolean = dbQuery {
-        Reviews.deleteWhere { Reviews.idTreasure eq idTreasure } > 0
+        Review.deleteWhere { Review.idTreasure eq idTreasure } > 0
     }
 
     override suspend fun deleteReviewsOfUser(idUser: Int): Boolean = dbQuery {
-        Reviews.deleteWhere { Reviews.idUser eq idUser } > 0
+        Review.deleteWhere { Review.idUser eq idUser } > 0
     }
 
 }

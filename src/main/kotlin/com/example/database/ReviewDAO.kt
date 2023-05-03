@@ -1,24 +1,22 @@
 package com.example.database
 
-import com.example.models.Report
-import com.example.models.Reports
-import com.example.models.Review
 import com.example.models.Reviews
+import com.example.models.Review
 import org.jetbrains.exposed.sql.ResultRow
 
 interface ReviewDAO {
-    fun resultRowToReview(row: ResultRow) = Review(
-        idReview = row[Reviews.idReview],
-        idTreasure = row[Reviews.idTreasure],
-        idUser = row[Reviews.idUser],
-        opinion = row[Reviews.opinion],
-        rating = row[Reviews.rating],
-        photo = row[Reviews.photo]
+    fun resultRowToReview(row: ResultRow) = Reviews(
+        idReview = row[Review.idReview],
+        idTreasure = row[Review.idTreasure],
+        idUser = row[Review.idUser],
+        opinion = row[Review.opinion],
+        rating = row[Review.rating],
+        photo = row[Review.photo]
     )
-    suspend fun selectAllTreasureReviews(idTreasure: Int): List<Review>
-    suspend fun selectAllTreasureReviewsByUser(idTreasure: Int, idUser: Int): List<Review>
-    suspend fun postReview(reviewToAdd: Review): Review?
-    suspend fun updateReview(reviewToUpdate: Review): Boolean
+    suspend fun selectAllTreasureReviews(idTreasure: Int): List<Reviews>
+    suspend fun selectAllTreasureReviewsByUser(idTreasure: Int, idUser: Int): List<Reviews>
+    suspend fun postReview(reviewsToAdd: Reviews): Reviews?
+    suspend fun updateReview(reviewsToUpdate: Reviews): Boolean
     suspend fun deleteReview(idReview: Int): Boolean
     suspend fun deleteReviewsOfTreasure(idTreasure: Int): Boolean
     suspend fun deleteReviewsOfUser(idUser: Int): Boolean
