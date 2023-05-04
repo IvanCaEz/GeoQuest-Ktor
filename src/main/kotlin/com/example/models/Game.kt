@@ -1,5 +1,6 @@
 package com.example.models
 
+import com.example.Utils.InstantSerializer
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Table
@@ -12,8 +13,8 @@ data class Games(
     val idTreasure: Int,
     val idUser: Int,
     var solved: Boolean,
-    @Contextual var timeStart: Instant,
-    @Contextual var timeEnd: Instant
+    @Contextual @Serializable(with=InstantSerializer::class) var timeStart: Instant,
+    @Contextual @Serializable(with=InstantSerializer::class) var timeEnd: Instant
 
 )
 object Game: Table(){
@@ -23,6 +24,7 @@ object Game: Table(){
     val solved = bool("game_solved")
     val timeStart = timestamp("game_time_start")
     val timeEnd = timestamp("game_time_end")
+
 
     override val primaryKey = PrimaryKey(idGame, name = "game_pkey")
 }

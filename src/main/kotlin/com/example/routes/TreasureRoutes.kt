@@ -1,6 +1,7 @@
 package com.example.routes
 
 import com.example.models.CRUD.*
+import com.example.models.Games
 import com.example.models.Reviews
 import com.example.models.TreasureStats
 import com.example.models.Treasures
@@ -16,7 +17,9 @@ import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.FileNotFoundException
 import java.time.Duration
+import java.time.LocalDate
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
 fun Route.treasureRouting() {
@@ -26,13 +29,18 @@ fun Route.treasureRouting() {
     val reportCrud = ReportCRUD()
     val gameCrud = GameCRUD()
     val gson = Gson()
+    val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+
 
     route("/treasure") {
         get {
             val listOfTreasures = treasureCrud.selectAllTreasures()
             if (listOfTreasures.isNotEmpty()) {
                 call.respond(listOfTreasures)
-            } else call.respondText("No treasures found.", status = HttpStatusCode.OK)
+            } else {
+                call.respond(listOf<Treasures>())
+                call.respondText("No treasures found.", status = HttpStatusCode.NotFound)
+            }
         }
         get("{treasureID}") {
             val treasureID = call.parameters["treasureID"]
@@ -287,6 +295,8 @@ fun Route.treasureRouting() {
                     else -> {}
                 }
             }
+
+
             reviewCrud.postReview(reviewToAdd)
             return@post call.respondText(
                 "Treasure with id ${reviewToAdd.idTreasure} reviewed correctly.",
@@ -380,6 +390,16 @@ fun Route.treasureRouting() {
                 "Report with id $reportID on treasure with id $treasureID has been deleted.",
                 status = HttpStatusCode.OK
             )
+        }
+
+        post("{treasureID}/games"){
+            val treasureID = call.parameters["treasureID"]
+            if (treasureID.isNullOrBlank()) return@post call.respondText(
+                "Missing treasure id.", status = HttpStatusCode.BadRequest
+            )
+            val gameToAdd = call.receive<Games>()
+            gameCrud.postGame(gameToAdd)
+            call.respondText("Game with id ${gameToAdd.idGame} added.")
         }
 
 

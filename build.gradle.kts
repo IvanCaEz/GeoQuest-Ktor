@@ -49,4 +49,8 @@ dependencies {
 
     implementation("com.h2database:h2:$h2_version")
 
+    // Datetime Kotlin
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+
+
 }

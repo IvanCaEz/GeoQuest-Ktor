@@ -1,5 +1,6 @@
 package com.example.models
 
+import com.example.Utils.InstantSerializer
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Table
@@ -12,14 +13,14 @@ data class Reports(
     val idUser: Int,
     val idTreasure: Int,
     val reportInfo: String,
-    @Contextual val reportDate: LocalDate
+    val reportDate: String
 )
 
 object Report: Table(){
     val idReport = integer("report_id").autoIncrement("report_id_seq")
-    val idUser = integer("id_user")
-    val idTreasure = integer("treasure_id")
-    val reportInfo = varchar("report_info", 1000)
-    val reportDate = date("report_date")
+    val idUser = integer("id_user").references(Users.idUser)
+    val idTreasure = integer("treasure_id").references(Treasure.idTreasure)
+    val reportInfo = varchar("report_info", 500)
+    val reportDate = varchar("report_date", 100)
     override val primaryKey = PrimaryKey(idReport, name = "report_pkey")
 }
