@@ -27,6 +27,8 @@ fun Application.module() {
         allowMethod(HttpMethod.Patch)
         allowHeader(HttpHeaders.Authorization)
         allowHeader("GeoQuest")
+        allowHeader("multipart/form-data")
+        allowHeader("application/json")
         anyHost() // @TODO: Don't do this in production if possible. Try to limit it.
     }
 }

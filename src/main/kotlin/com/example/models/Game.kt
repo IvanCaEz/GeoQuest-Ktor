@@ -13,8 +13,8 @@ data class Games(
     val idTreasure: Int,
     val idUser: Int,
     var solved: Boolean,
-    @Contextual @Serializable(with=InstantSerializer::class) var timeStart: Instant,
-    @Contextual @Serializable(with=InstantSerializer::class) var timeEnd: Instant
+    var timeStart: String,
+    var timeEnd: String
 
 )
 object Game: Table(){
@@ -22,8 +22,8 @@ object Game: Table(){
     val idTreasure = integer("treasure_id").references(Treasure.idTreasure)
     val idUser = integer("id_user").references(Users.idUser)
     val solved = bool("game_solved")
-    val timeStart = timestamp("game_time_start")
-    val timeEnd = timestamp("game_time_end")
+    val timeStart = varchar("game_time_start", 128)
+    val timeEnd = varchar("game_time_end", 128)
 
 
     override val primaryKey = PrimaryKey(idGame, name = "game_pkey")

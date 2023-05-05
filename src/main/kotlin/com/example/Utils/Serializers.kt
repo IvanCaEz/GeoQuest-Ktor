@@ -51,11 +51,8 @@ fun main() {
                 0,
                 3,
                 1,
-                true,
-                LocalDateTime.now().toInstant(ZoneOffset.UTC),
-                LocalDateTime.of(2023, Month.MAY, 3, 16, 8, 18).toInstant(
-                    ZoneOffset.UTC
-                )
+                true,"",""
+
             )
         )
     )

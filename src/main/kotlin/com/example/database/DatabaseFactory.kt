@@ -18,7 +18,6 @@ import java.time.Duration
 
 object DatabaseFactory {
     fun init() {
-        val userCRUD = UserCRUD()
         val driverClassName = "org.h2.Driver"
         val username = "avnadmin"
         val password = "AVNS_hm2mNlomL9mn9cePWwo"
@@ -28,11 +27,6 @@ object DatabaseFactory {
 
         transaction(database) {
 
-            runBlocking {
-
-                val userToUpdate = User(1, "Alejandro", "ale@jandro.com", "123456", "placeholder_review.png", "Noob", "Admin", listOf())
-
-            }
         }
 
 

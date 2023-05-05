@@ -133,7 +133,7 @@ fun Route.userRouting() {
 
         }
 
-        get("{userName}"){
+        get("username/{userName}"){
             val userName = call.parameters["userName"]
             if (userName.isNullOrBlank()) return@get call.respondText("Missing username.",
                 status = HttpStatusCode.BadRequest)
@@ -176,6 +176,7 @@ fun Route.userRouting() {
                 }
 
                 val reportQuantity = reportCrud.selectAllReportByUserId(userID.toInt()).size
+                /*
                 var difference = 0L
                 listOfGames.forEach { game ->
                     difference += Duration.between(game.timeStart, game.timeEnd).toMillis()
@@ -185,7 +186,10 @@ fun Route.userRouting() {
                 val hours = TimeUnit.MILLISECONDS.toHours(time)
                 val minutes = TimeUnit.MILLISECONDS.toMinutes(time) % 60
                 val seconds = TimeUnit.MILLISECONDS.toSeconds(time) % 60
-                val averageTime = "$hours:$minutes:$seconds"
+                 */
+
+
+                val averageTime = "0:00:00"
 
                 val userStats = UserStats(userID.toInt(), totalSolved, totalNotSolved, reportQuantity, averageTime)
                 call.respond(userStats)

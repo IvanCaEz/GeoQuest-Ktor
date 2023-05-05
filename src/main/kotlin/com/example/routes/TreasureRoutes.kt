@@ -93,6 +93,7 @@ fun Route.treasureRouting() {
                 val totalFavourites = favouriteCrud.selectAllFavouritesByTreasureID(treasureID.toInt()).size
                 val reviews = reviewCrud.selectAllTreasureReviews(treasureID.toInt())
                 val reportQuantity = reportCrud.selectAllTreasureReports(treasureID.toInt()).size
+                /*
                 var diff = 0L
                 games.forEach { game ->
                     diff += Duration.between(game.timeStart, game.timeEnd).toMillis()
@@ -101,7 +102,8 @@ fun Route.treasureRouting() {
                 val hours = TimeUnit.MILLISECONDS.toHours(diff/games.size)
                 val minutes = TimeUnit.MILLISECONDS.toMinutes(diff/games.size) % 60
                 val seconds = TimeUnit.MILLISECONDS.toSeconds(diff/games.size) % 60
-                val averageTime = "$hours:$minutes:$seconds"
+                 */
+                val averageTime = "0"
 
                val treasureStats = TreasureStats(treasureID.toInt(), totalPlayed, totalFound,
                    totalFavourites, reviews.size, reportQuantity, averageTime)

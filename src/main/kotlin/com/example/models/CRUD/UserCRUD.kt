@@ -48,7 +48,7 @@ class UserCRUD: UserDAO {
     }
 
     override suspend fun checkIfUserExistByNick(nickName: String): Boolean {
-        val user = Users.select { Users.nickName eq nickName }.map(::resultRowToUser).singleOrNull()
+        val user = selectUserByUserName(nickName)
         return user == null
     }
 }
