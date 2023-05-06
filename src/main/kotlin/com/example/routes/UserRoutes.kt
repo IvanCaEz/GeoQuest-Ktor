@@ -12,6 +12,9 @@ import io.ktor.server.routing.*
 import java.io.File
 import java.io.FileNotFoundException
 import java.time.Duration
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 
 fun Route.userRouting() {
@@ -21,6 +24,8 @@ fun Route.userRouting() {
     val gameCrud = GameCRUD()
     val reviewCrud = ReviewCRUD()
     val reportCrud = ReportCRUD()
+    val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy'T'HH:mm:ss")
+
     route("/user") {
         post("/login") {
             // recibimos este formato username,password
@@ -176,20 +181,20 @@ fun Route.userRouting() {
                 }
 
                 val reportQuantity = reportCrud.selectAllReportByUserId(userID.toInt()).size
-                /*
-                var difference = 0L
+
+                var diff = 0L
                 listOfGames.forEach { game ->
-                    difference += Duration.between(game.timeStart, game.timeEnd).toMillis()
+                    val startTime = LocalDateTime.parse(game.timeStart, formatter)
+                    println(startTime)
+                    val endTime = LocalDateTime.parse(game.timeEnd, formatter)
+                    diff += Duration.between(startTime,endTime).toMillis()
                 }
-                val time = difference / listOfGames.size
 
-                val hours = TimeUnit.MILLISECONDS.toHours(time)
-                val minutes = TimeUnit.MILLISECONDS.toMinutes(time) % 60
-                val seconds = TimeUnit.MILLISECONDS.toSeconds(time) % 60
-                 */
+                val hours = TimeUnit.MILLISECONDS.toHours(diff/listOfGames.size)
+                val minutes = TimeUnit.MILLISECONDS.toMinutes(diff/listOfGames.size) % 60
+                val seconds = TimeUnit.MILLISECONDS.toSeconds(diff/listOfGames.size) % 60
 
-
-                val averageTime = "0:00:00"
+                val averageTime = "$hours:$minutes:$seconds"
 
                 val userStats = UserStats(userID.toInt(), totalSolved, totalNotSolved, reportQuantity, averageTime)
                 call.respond(userStats)
@@ -275,6 +280,17 @@ fun Route.userRouting() {
                 call.respond(favList)
             } else call.respondText("User with id $userID hasn't mark any treasure as favourite.",
                 status = HttpStatusCode.Accepted)
+        }
+
+        get("{userID}/favs/{treasureID}"){
+            val userID = call.parameters["userID"]
+            if (userID.isNullOrBlank()) return@get call.respondText("Missing user id.",
+                status = HttpStatusCode.BadRequest)
+            val treasureID = call.parameters["treasureID"]
+            if (treasureID.isNullOrBlank()) return@get call.respondText("Missing treasure id.",
+                status = HttpStatusCode.BadRequest)
+            call.respond(favCrud.checkIfFavourite(userID.toInt(), treasureID.toInt()))
+
         }
         post("{userID}/favs"){
             val userID = call.parameters["userID"]

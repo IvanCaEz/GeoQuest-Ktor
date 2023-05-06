@@ -7,6 +7,10 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class FavouriteCRUD: FavouriteDAO {
+    override suspend fun checkIfFavourite(userID: Int, treasureID: Int): Boolean  = dbQuery {
+      Favourite.select{(Favourite.idTreasure eq treasureID) and (Favourite.idUser eq userID)}.empty()
+    }
+
     override suspend fun selectAllFavouritesByUserID(userID: Int): List<Favourites> = dbQuery {
         Favourite.select {Favourite.idUser eq userID}.map(::resultRowToFavourite)
     }

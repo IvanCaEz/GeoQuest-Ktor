@@ -18,6 +18,7 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.time.Duration
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
@@ -29,8 +30,7 @@ fun Route.treasureRouting() {
     val reportCrud = ReportCRUD()
     val gameCrud = GameCRUD()
     val gson = Gson()
-    val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
-
+    val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy'T'HH:mm:ss")
 
     route("/treasure") {
         get {
@@ -56,15 +56,17 @@ fun Route.treasureRouting() {
             )
         }
 
-        get("{treasureID}/picture"){
+        get("{treasureID}/picture") {
             var treasureImage: File = File("")
             val treasureID = call.parameters["treasureID"]
-            if (treasureID.isNullOrBlank()) return@get call.respondText("Missing treasure id.",
-                status = HttpStatusCode.BadRequest)
+            if (treasureID.isNullOrBlank()) return@get call.respondText(
+                "Missing treasure id.",
+                status = HttpStatusCode.BadRequest
+            )
 
             val treasurePhoto = treasureCrud.selectTreasureByID(treasureID.toInt())!!.image
             treasureImage = File("src/main/kotlin/com/example/treasure_pictures/$treasurePhoto")
-            if (treasureImage.exists()){
+            if (treasureImage.exists()) {
                 call.respondFile(treasureImage)
             } else {
                 call.respondText("No image found.", status = HttpStatusCode.NotFound)
@@ -82,7 +84,7 @@ fun Route.treasureRouting() {
                 val totalFound: Int
 
                 val games = gameCrud.selectAllTreasureGames(treasureID.toInt())
-                if (games.isNotEmpty()){
+                if (games.isNotEmpty()) {
                     totalPlayed = games.count()
                     totalFound = games.count { it.solved }
                 } else {
@@ -93,20 +95,23 @@ fun Route.treasureRouting() {
                 val totalFavourites = favouriteCrud.selectAllFavouritesByTreasureID(treasureID.toInt()).size
                 val reviews = reviewCrud.selectAllTreasureReviews(treasureID.toInt())
                 val reportQuantity = reportCrud.selectAllTreasureReports(treasureID.toInt()).size
-                /*
                 var diff = 0L
                 games.forEach { game ->
-                    diff += Duration.between(game.timeStart, game.timeEnd).toMillis()
+                    val startTime = LocalDateTime.parse(game.timeStart, formatter)
+                    val endTime = LocalDateTime.parse(game.timeEnd, formatter)
+                    diff += Duration.between(startTime, endTime).toMillis()
                 }
 
-                val hours = TimeUnit.MILLISECONDS.toHours(diff/games.size)
-                val minutes = TimeUnit.MILLISECONDS.toMinutes(diff/games.size) % 60
-                val seconds = TimeUnit.MILLISECONDS.toSeconds(diff/games.size) % 60
-                 */
-                val averageTime = "0"
+                val hours = TimeUnit.MILLISECONDS.toHours(diff / games.size)
+                val minutes = TimeUnit.MILLISECONDS.toMinutes(diff / games.size) % 60
+                val seconds = TimeUnit.MILLISECONDS.toSeconds(diff / games.size) % 60
 
-               val treasureStats = TreasureStats(treasureID.toInt(), totalPlayed, totalFound,
-                   totalFavourites, reviews.size, reportQuantity, averageTime)
+                val averageTime = "$hours:$minutes:$seconds"
+
+                val treasureStats = TreasureStats(
+                    treasureID.toInt(), totalPlayed, totalFound,
+                    totalFavourites, reviews.size, reportQuantity, averageTime
+                )
 
                 call.respond(treasureStats)
 
@@ -135,9 +140,11 @@ fun Route.treasureRouting() {
             val reviewID = call.parameters["reviewID"]
 
             if (treasureID.isNullOrBlank()) return@get call.respondText(
-                "Missing user id.", status = HttpStatusCode.BadRequest)
+                "Missing user id.", status = HttpStatusCode.BadRequest
+            )
             if (reviewID.isNullOrBlank()) return@get call.respondText(
-                "Missing review id.", status = HttpStatusCode.BadRequest)
+                "Missing review id.", status = HttpStatusCode.BadRequest
+            )
 
             val review = reviewCrud.selectReviewOfTreasure(treasureID.toInt(), reviewID.toInt())
             if (review != null) {
@@ -153,16 +160,18 @@ fun Route.treasureRouting() {
             val reviewID = call.parameters["reviewID"]
 
             if (treasureID.isNullOrBlank()) return@get call.respondText(
-                "Missing user id.", status = HttpStatusCode.BadRequest)
+                "Missing user id.", status = HttpStatusCode.BadRequest
+            )
             if (reviewID.isNullOrBlank()) return@get call.respondText(
-                "Missing review id.", status = HttpStatusCode.BadRequest)
+                "Missing review id.", status = HttpStatusCode.BadRequest
+            )
 
             var reviewImage: File = File("")
 
             val reviewPhoto = reviewCrud.selectReviewOfTreasure(treasureID.toInt(), reviewID.toInt())!!.photo
             println(reviewPhoto)
             reviewImage = File("src/main/kotlin/com/example/treasure_pictures/review_pictures/$reviewPhoto")
-            if (reviewImage.exists()){
+            if (reviewImage.exists()) {
                 call.respondFile(reviewImage)
             } else {
                 call.respondText("No image found.", status = HttpStatusCode.NotFound)
@@ -207,12 +216,14 @@ fun Route.treasureRouting() {
             val treasureData = call.receiveMultipart()
             var treasureToAdd = Treasures(
                 0, "", "", "", 0.0, 0.0,
-                "", "", "", "", 0.0)
+                "", "", "", "", 0.0
+            )
             treasureData.forEachPart { part ->
                 when (part) {
                     is PartData.FormItem -> {
                         treasureToAdd = gson.fromJson(part.value, Treasures::class.java)
                     }
+
                     is PartData.FileItem -> {
                         try {
                             treasureToAdd.image = part.originalFileName as String
@@ -223,6 +234,7 @@ fun Route.treasureRouting() {
                             println("Error ${e.message}")
                         }
                     }
+
                     else -> {}
                 }
                 println("Subido ${part.name}")
@@ -242,16 +254,18 @@ fun Route.treasureRouting() {
             val treasureData = call.receiveMultipart()
             var treasureToUpdate = Treasures(
                 0, "", "", "", 0.0, 0.0,
-                "", "", "", "", 0.0)
+                "", "", "", "", 0.0
+            )
             treasureData.forEachPart { part ->
                 when (part) {
                     is PartData.FormItem -> {
                         treasureToUpdate = gson.fromJson(part.value, Treasures::class.java)
                     }
+
                     is PartData.FileItem -> {
                         try {
                             treasureToUpdate.image = part.originalFileName as String
-                            if (treasureToUpdate.image != treasureCrud.selectTreasureByID(treasureID.toInt())!!.image){
+                            if (treasureToUpdate.image != treasureCrud.selectTreasureByID(treasureID.toInt())!!.image) {
                                 val fileBytes = part.streamProvider().readBytes()
                                 File("src/main/kotlin/com/example/treasure_pictures/" + treasureToUpdate.image)
                                     .writeBytes(fileBytes)
@@ -260,6 +274,7 @@ fun Route.treasureRouting() {
                             println("Error ${e.message}")
                         }
                     }
+
                     else -> {}
                 }
                 println("Subido ${part.name}")
@@ -272,18 +287,35 @@ fun Route.treasureRouting() {
             )
         }
 
+        put("{treasureID}/score") {
+            val treasureID = call.parameters["treasureID"]
+            if (treasureID.isNullOrBlank()) return@put call.respondText(
+                "Missing treasure id.", status = HttpStatusCode.BadRequest
+            )
+            val treasureToUpdate = call.receive<Treasures>()
+            treasureToUpdate.score = treasureCrud.setScore(treasureID.toInt())
+            treasureCrud.updateTreasure(treasureToUpdate)
+            return@put call.respondText(
+                "Score of treasure with id ${treasureToUpdate.idTreasure} and ${treasureToUpdate.name} has been updated.",
+                status = HttpStatusCode.Created
+            )
+        }
+
         post("{treasureID}/reviews") {
             val treasureID = call.parameters["treasureID"]
             if (treasureID.isNullOrBlank()) return@post call.respondText(
-                "Missing user id.", status = HttpStatusCode.BadRequest)
+                "Missing user id.", status = HttpStatusCode.BadRequest
+            )
             val reviewData = call.receiveMultipart()
             var reviewToAdd = Reviews(
-                0, 0, 0, "", 0, "placeholder_review.png")
+                0, 0, 0, "", 0, "placeholder_review.png"
+            )
             reviewData.forEachPart { part ->
                 when (part) {
                     is PartData.FormItem -> {
                         reviewToAdd = gson.fromJson(part.value, Reviews::class.java)
                     }
+
                     is PartData.FileItem -> {
                         try {
                             reviewToAdd.photo = part.originalFileName as String
@@ -294,6 +326,7 @@ fun Route.treasureRouting() {
                             println("Error ${e.message}")
                         }
                     }
+
                     else -> {}
                 }
             }
@@ -310,21 +343,29 @@ fun Route.treasureRouting() {
             val reviewID = call.parameters["reviewID"]
 
             if (treasureID.isNullOrBlank()) return@put call.respondText(
-                "Missing user id.", status = HttpStatusCode.BadRequest)
+                "Missing user id.", status = HttpStatusCode.BadRequest
+            )
             if (reviewID.isNullOrBlank()) return@put call.respondText(
-                "Missing review id.", status = HttpStatusCode.BadRequest)
+                "Missing review id.", status = HttpStatusCode.BadRequest
+            )
             val reviewData = call.receiveMultipart()
             var reviewToUpdate = Reviews(
-                0, 0, 0, "", 0, "placeholder_review.png")
+                0, 0, 0, "", 0, "placeholder_review.png"
+            )
             reviewData.forEachPart { part ->
                 when (part) {
                     is PartData.FormItem -> {
                         reviewToUpdate = gson.fromJson(part.value, Reviews::class.java)
                     }
+
                     is PartData.FileItem -> {
                         try {
                             reviewToUpdate.photo = part.originalFileName as String
-                            if (reviewToUpdate.photo != reviewCrud.selectReviewOfTreasure(treasureID.toInt(), reviewID.toInt())!!.photo) {
+                            if (reviewToUpdate.photo != reviewCrud.selectReviewOfTreasure(
+                                    treasureID.toInt(),
+                                    reviewID.toInt()
+                                )!!.photo
+                            ) {
                                 val fileBytes = part.streamProvider().readBytes()
                                 File("src/main/kotlin/com/example/treasure_pictures/review_pictures/" + reviewToUpdate.photo)
                                     .writeBytes(fileBytes)
@@ -333,16 +374,18 @@ fun Route.treasureRouting() {
                             println("Error ${e.message}")
                         }
                     }
+
                     else -> {}
                 }
             }
             reviewCrud.updateReview(reviewToUpdate)
             return@put call.respondText(
                 "Review with id ${reviewToUpdate.idReview} updated correctly.",
-                status = HttpStatusCode.OK)
+                status = HttpStatusCode.OK
+            )
         }
 
-        delete("{treasureID}"){
+        delete("{treasureID}") {
             val treasureID = call.parameters["treasureID"]
             if (treasureID.isNullOrBlank()) return@delete call.respondText(
                 "Missing treasure id.", status = HttpStatusCode.BadRequest
@@ -358,7 +401,7 @@ fun Route.treasureRouting() {
             )
         }
 
-        delete("{treasureID}/reviews/{reviewID}"){
+        delete("{treasureID}/reviews/{reviewID}") {
             val treasureID = call.parameters["treasureID"]
             val reviewID = call.parameters["reviewID"]
 
@@ -376,7 +419,7 @@ fun Route.treasureRouting() {
                 status = HttpStatusCode.OK
             )
         }
-        delete("{treasureID}/reports/{reportID}"){
+        delete("{treasureID}/reports/{reportID}") {
             val treasureID = call.parameters["treasureID"]
             val reportID = call.parameters["reportID"]
 
@@ -394,7 +437,7 @@ fun Route.treasureRouting() {
             )
         }
 
-        post("{treasureID}/games"){
+        post("{treasureID}/games") {
             val treasureID = call.parameters["treasureID"]
             if (treasureID.isNullOrBlank()) return@post call.respondText(
                 "Missing treasure id.", status = HttpStatusCode.BadRequest

@@ -29,6 +29,9 @@ fun Application.module() {
         allowHeader("GeoQuest")
         allowHeader("multipart/form-data")
         allowHeader("application/json")
+        allowHeader("Content-Type")
+        allowHeader("Authorization")
+        allowHeader("Access-Control-Allow-Origin")
         anyHost() // @TODO: Don't do this in production if possible. Try to limit it.
     }
 }

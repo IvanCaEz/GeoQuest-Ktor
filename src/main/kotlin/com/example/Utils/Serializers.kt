@@ -65,4 +65,9 @@ fun main() {
         )
     )
     println(Json.encodeToString(Favourites(1, 3)))
+
+    val formater = DateTimeFormatter.ofPattern("dd-MM-yyyy'T'HH:mm:ss")
+
+    println(formater.format(LocalDateTime.now()))
+    println(LocalDateTime.parse("04-05-2023T10:50:09", formater))
 }
