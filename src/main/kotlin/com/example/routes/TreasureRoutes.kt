@@ -253,7 +253,7 @@ fun Route.treasureRouting() {
             )
             val treasureData = call.receiveMultipart()
             var treasureToUpdate = Treasures(
-                0, "", "", "", 0.0, 0.0,
+                treasureID.toInt(), "", "", "", 0.0, 0.0,
                 "", "", "", "", 0.0
             )
             treasureData.forEachPart { part ->
@@ -283,7 +283,7 @@ fun Route.treasureRouting() {
             treasureCrud.updateTreasure(treasureToUpdate)
             return@put call.respondText(
                 "Treasure with id ${treasureToUpdate.idTreasure} and ${treasureToUpdate.name} has been updated.",
-                status = HttpStatusCode.Created
+                status = HttpStatusCode.OK
             )
         }
 
@@ -297,7 +297,7 @@ fun Route.treasureRouting() {
             treasureCrud.updateTreasure(treasureToUpdate)
             return@put call.respondText(
                 "Score of treasure with id ${treasureToUpdate.idTreasure} and ${treasureToUpdate.name} has been updated.",
-                status = HttpStatusCode.Created
+                status = HttpStatusCode.OK
             )
         }
 
@@ -331,8 +331,8 @@ fun Route.treasureRouting() {
                 }
             }
 
-
             reviewCrud.postReview(reviewToAdd)
+
             return@post call.respondText(
                 "Treasure with id ${reviewToAdd.idTreasure} reviewed correctly.",
                 status = HttpStatusCode.Created

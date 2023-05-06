@@ -276,10 +276,17 @@ fun Route.userRouting() {
             if (userID.isNullOrBlank()) return@get call.respondText("Missing user id.",
                 status = HttpStatusCode.BadRequest)
             val favList = favCrud.selectAllFavouritesByUserID(userID.toInt())
+            val favTreasureList = mutableListOf<Treasures>()
             if (favList.isNotEmpty()){
-                call.respond(favList)
-            } else call.respondText("User with id $userID hasn't mark any treasure as favourite.",
-                status = HttpStatusCode.Accepted)
+                favList.forEach {
+                    favTreasureList.add(treasureCrud.selectTreasureByID(it.idTreasure)!!)
+                }
+            } else {
+                call.respondText("User with id $userID hasn't marked any treasure as favourite.",
+                    status = HttpStatusCode.Accepted)
+            }
+            call.respond(favTreasureList)
+
         }
 
         get("{userID}/favs/{treasureID}"){
@@ -296,7 +303,7 @@ fun Route.userRouting() {
             val userID = call.parameters["userID"]
             if (userID.isNullOrBlank()) return@post call.respondText("Missing user id.",
                 status = HttpStatusCode.BadRequest)
-            val treasureID = call.receive<Treasures>().idTreasure
+            val treasureID = call.receive<Int>()
             favCrud.addFavourite(userID.toInt(), treasureID)
             call.respondText("Treasure with id $treasureID added to user with id $userID list of favorites.")
         }
