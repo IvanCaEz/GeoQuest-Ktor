@@ -190,9 +190,11 @@ fun Route.userRouting() {
                     diff += Duration.between(startTime,endTime).toMillis()
                 }
 
-                val hours = TimeUnit.MILLISECONDS.toHours(diff/listOfGames.size)
-                val minutes = TimeUnit.MILLISECONDS.toMinutes(diff/listOfGames.size) % 60
-                val seconds = TimeUnit.MILLISECONDS.toSeconds(diff/listOfGames.size) % 60
+                val total = if(listOfGames.isEmpty()) 1 else listOfGames.size
+
+                val hours = TimeUnit.MILLISECONDS.toHours(diff /total)
+                val minutes = TimeUnit.MILLISECONDS.toMinutes(diff / total) % 60
+                val seconds = TimeUnit.MILLISECONDS.toSeconds(diff / total) % 60
 
                 val averageTime = "$hours:$minutes:$seconds"
 
@@ -285,7 +287,7 @@ fun Route.userRouting() {
                 call.respondText("User with id $userID hasn't marked any treasure as favourite.",
                     status = HttpStatusCode.Accepted)
             }
-            call.respond(favTreasureList)
+            call.respond(favTreasureList.toList())
 
         }
 
@@ -296,7 +298,7 @@ fun Route.userRouting() {
             val treasureID = call.parameters["treasureID"]
             if (treasureID.isNullOrBlank()) return@get call.respondText("Missing treasure id.",
                 status = HttpStatusCode.BadRequest)
-            call.respond(favCrud.checkIfFavourite(userID.toInt(), treasureID.toInt()))
+            call.respond(!favCrud.checkIfFavourite(userID.toInt(), treasureID.toInt()))
 
         }
         post("{userID}/favs"){

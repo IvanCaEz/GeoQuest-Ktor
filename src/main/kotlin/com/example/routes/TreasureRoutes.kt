@@ -102,9 +102,11 @@ fun Route.treasureRouting() {
                     diff += Duration.between(startTime, endTime).toMillis()
                 }
 
-                val hours = TimeUnit.MILLISECONDS.toHours(diff / games.size)
-                val minutes = TimeUnit.MILLISECONDS.toMinutes(diff / games.size) % 60
-                val seconds = TimeUnit.MILLISECONDS.toSeconds(diff / games.size) % 60
+                val total = if(games.isEmpty()) 1 else games.size
+
+                val hours = TimeUnit.MILLISECONDS.toHours(diff /total)
+                val minutes = TimeUnit.MILLISECONDS.toMinutes(diff / total) % 60
+                val seconds = TimeUnit.MILLISECONDS.toSeconds(diff / total) % 60
 
                 val averageTime = "$hours:$minutes:$seconds"
 
