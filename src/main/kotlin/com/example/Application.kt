@@ -5,6 +5,9 @@ import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import com.example.plugins.*
+import com.example.security.hashing.SHA256HashingService
+import com.example.security.token.JwtTokenService
+import com.example.security.token.TokenConfig
 import io.ktor.http.*
 import io.ktor.server.plugins.cors.routing.*
 
@@ -15,9 +18,24 @@ fun main() {
 
 fun Application.module() {
     DatabaseFactory.init()
-    configureSecurity()
+    val tokenService = JwtTokenService()
+
+    val secret = "colinabo"
+    val issuer = "http://0.0.0.0:8080"
+    val audience = "user"
+    val myRealm = "loscolinabosmolan"
+
+    val tokenConfig = TokenConfig(
+        issuer = issuer,
+        audience = audience,
+        expiresIn = 365L + 1000L * 60L * 60L * 24L,
+        secret = secret
+    )
+    val hashingService = SHA256HashingService()
+
+    configureSecurity(tokenConfig)
     configureSerialization()
-    configureRouting()
+    configureRouting(hashingService, tokenService, tokenConfig)
     install(CORS) {
         allowMethod(HttpMethod.Get)
         allowMethod(HttpMethod.Post)
@@ -27,8 +45,6 @@ fun Application.module() {
         allowMethod(HttpMethod.Patch)
         allowHeader(HttpHeaders.Authorization)
         allowHeader("GeoQuest")
-        allowHeader("multipart/form-data")
-        allowHeader("application/json")
         allowHeader("Content-Type")
         allowHeader("Authorization")
         allowHeader("Access-Control-Allow-Origin")

@@ -1,9 +1,8 @@
 package com.example.database
 
+import com.example.models.*
 import com.example.models.CRUD.TreasureCRUD
 import com.example.models.CRUD.UserCRUD
-import com.example.models.User
-import com.example.models.Users
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.Database
@@ -26,6 +25,7 @@ object DatabaseFactory {
 
 
         transaction(database) {
+            //SchemaUtils.create(Users, Treasure, Review, Favourite, Report,Game)
 
         }
 

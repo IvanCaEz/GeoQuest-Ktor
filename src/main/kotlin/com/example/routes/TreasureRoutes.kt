@@ -217,7 +217,7 @@ fun Route.treasureRouting() {
         post {
             val treasureData = call.receiveMultipart()
             var treasureToAdd = Treasures(
-                0, "", "", "", 0.0, 0.0,
+                0, "", "", "placeholder_map.png", 0.0, 0.0,
                 "", "", "", "", 0.0
             )
             treasureData.forEachPart { part ->

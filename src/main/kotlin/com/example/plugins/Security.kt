@@ -1,26 +1,37 @@
 package com.example.plugins
 
+import com.auth0.jwt.JWT
+import com.auth0.jwt.algorithms.Algorithm
+import com.example.security.token.TokenConfig
+import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.util.*
 import io.ktor.server.response.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.jwt.*
 import io.ktor.server.routing.*
 
-fun Application.configureSecurity() {
+fun Application.configureSecurity(config: TokenConfig) {
 
     authentication {
-        val myRealm = "MyRealm"
-        val usersInMyRealmToHA1: Map<String, ByteArray> = mapOf(
-            // pass="test", HA1=MD5("test:MyRealm:pass")="fb12475e62dedc5c2744d98eb73b8877"
-            "test" to hex("fb12475e62dedc5c2744d98eb73b8877")
-        )
+        jwt {
+            val realm = "loscolinabosmolan"
 
-        digest("myDigestAuth") {
-            digestProvider { userName, realm ->
-                usersInMyRealmToHA1[userName]
+            verifier(
+                JWT
+                    .require(Algorithm.HMAC256(config.secret))
+                    .withAudience(config.audience)
+                    .withIssuer(config.issuer)
+                    .build()
+            )
+            validate{ credential ->
+                if (credential.payload.audience.contains(config.audience)){
+                    JWTPrincipal(credential.payload)
+                } else null
             }
         }
     }
+
     routing {
 
     }

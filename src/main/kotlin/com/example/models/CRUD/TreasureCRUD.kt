@@ -63,5 +63,4 @@ class TreasureCRUD: TreasureDAO {
             reviews.sumOf { review -> review.rating.toDouble() } / reviews.size
         } else 0.0
     }
-
 }
