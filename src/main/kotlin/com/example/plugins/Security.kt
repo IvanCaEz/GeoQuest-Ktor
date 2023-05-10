@@ -32,7 +32,4 @@ fun Application.configureSecurity(config: TokenConfig) {
         }
     }
 
-    routing {
-
-    }
 }

@@ -41,6 +41,7 @@ fun Route.userRouting(hashingService: HashingService, tokenService: TokenService
                 call.respond(HttpStatusCode.BadRequest, "The request is null.")
                 return@post
             }
+            println(request)
             val user = userCrud.selectUserByUserName(request.username)
             if (user == null){
                 call.respond(HttpStatusCode.NotFound, "Username not found.")
@@ -54,7 +55,7 @@ fun Route.userRouting(hashingService: HashingService, tokenService: TokenService
             val token = tokenService.generate(tokenConfig,
                 TokenClaim("userName", user.nickName)
             )
-            call.respond(HttpStatusCode.OK, AuthResponse(token))
+            call.respond(HttpStatusCode.OK, AuthResponse(token, user))
         }
 
         post {
