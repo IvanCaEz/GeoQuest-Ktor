@@ -394,6 +394,7 @@ fun Route.treasureRouting() {
             )
             //Eliminamos, game, reviews y reports
             gameCrud.deleteTreasureGame(treasureID.toInt())
+            favouriteCrud.deleteFavouriteByTreasureID(treasureID.toInt())
             reviewCrud.deleteReviewsOfTreasure(treasureID.toInt())
             reportCrud.deleteReportsOfTreasure(treasureID.toInt())
             treasureCrud.deleteTreasure(treasureID.toInt())

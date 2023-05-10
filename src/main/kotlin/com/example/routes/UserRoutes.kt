@@ -123,12 +123,7 @@ fun Route.userRouting() {
             if (userID.isNullOrBlank()) return@delete call.respondText("Missing user id.",
                 status = HttpStatusCode.BadRequest)
 
-            // Primero eliminamos los favoritos, los games (las reviews) y los reports
-            val favList = favCrud.selectAllFavouritesByUserID(userID.toInt())
-            favList.forEach { fav ->
-                favCrud.deleteFavourite(userID.toInt(), fav.idTreasure)
-            }
-            // Eliminamos lo asociado al user y luego eliminamos el user
+            favCrud.deleteUserFavorites(userID.toInt())
             reportCrud.deleteReportsOfUser(userID.toInt())
             reviewCrud.deleteReviewsOfUser(userID.toInt())
             gameCrud.deleteUserGames(userID.toInt())
@@ -316,7 +311,7 @@ fun Route.userRouting() {
                 status = HttpStatusCode.BadRequest)
             if (treasureID.isNullOrBlank()) return@delete call.respondText("Missing treasure id.",
                 status = HttpStatusCode.BadRequest)
-            favCrud.deleteFavourite(userID.toInt(), treasureID.toInt())
+            favCrud.deleteFavouriteFromUser(userID.toInt(), treasureID.toInt())
             call.respondText("Treasure with id $treasureID deleted from user with id $userID list of favorites.",
                 status = HttpStatusCode.OK)
         }
