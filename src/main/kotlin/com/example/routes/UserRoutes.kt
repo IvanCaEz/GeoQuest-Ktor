@@ -14,6 +14,7 @@ import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -66,6 +67,13 @@ fun Route.userRouting(hashingService: HashingService, tokenService: TokenService
         }
 
         authenticate {
+            get("secret"){
+                // hay que mandar Authorization header con Bearer token
+                val principal = call.principal<JWTPrincipal>()
+                val userName = principal?.getClaim("userName", String::class)
+                call.respond(HttpStatusCode.OK, "The username is $userName")
+            }
+
             get("{userID}"){
                 val userID = call.parameters["userID"]
                 if (userID.isNullOrBlank()) return@get call.respondText("Missing user id.",
