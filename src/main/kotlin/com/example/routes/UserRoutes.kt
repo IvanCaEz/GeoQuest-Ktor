@@ -259,8 +259,7 @@ fun Route.userRouting(hashingService: HashingService, tokenService: TokenService
                 val reports = reportCrud.selectAllTreasureReports(userID.toInt())
                 if (reports.isNotEmpty()) {
                     call.respond(reports)
-                } else call.respondText("User with id $userID hasn't made any reports yet.",
-                    status = HttpStatusCode.Accepted)
+                } else call.respond(status = HttpStatusCode.Accepted, listOf<Reports>())
             }
 
             get("{userID}/reports/{reportID}") {

@@ -1,6 +1,5 @@
 package com.example.models
 
-import com.example.Utils.InstantSerializer
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.sql.Table

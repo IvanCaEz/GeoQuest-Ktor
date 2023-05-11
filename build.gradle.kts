@@ -51,10 +51,15 @@ dependencies {
 
     implementation("com.h2database:h2:$h2_version")
 
+    //CORs
+    implementation("io.ktor:ktor-server-cors-jvm:2.2.4")
+
     // Datetime Kotlin
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
     // Hex
     implementation("commons-codec:commons-codec:$commons_codec_version")
+
+    //Cloud hosting
 
 
 }
