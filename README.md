@@ -13,9 +13,9 @@ This repository contains the source code for the GeoQuest API developed with Kto
 
 ## Features
 
-- The API utilizes the Ktor framework, which is a Kotlin implementation of the web and server application design pattern.
-- It uses a cloud-hosted database provided by Aiven to store and manage place-related information.
-- The API is exposed to be accessible from any external client or application.
+- The API utilizes the [Ktor](https://ktor.io/) framework, which is a framework for [Kotlin](https://kotlinlang.org/) for building connected applications – web applications, HTTP services, mobile and browser application.
+- Also we are using the [Exposed](https://github.com/JetBrains/Exposed) framework to make the connection and the queries to our PosgreSQL database provided by Aiven, a cloud-hosted database to store and manage place-related information.
+- The API is used by our [Android Application](https://gitlab.com/ivan.martinez.7e6/geoquest-mobile) and our [Web platform](https://gitlab.com/asier.barranco.7e6/geoquest-web) and make use of [Json Web Tokens](https://jwt.io/) method for authenticate 
 
 ## Authors
 
@@ -28,7 +28,7 @@ This repository contains the source code for the GeoQuest API developed with Kto
 
 ## Configuration
 
-To install and set up GeoQuest Mobile on your local development environment, you just hav to clone the repository:
+To install and set up the GeoQuest server on your local development environment, you just have to clone the repository:
 
 ```bash
 git clone https://gitlab.com/Xalexx/geoquest-ktorapi.git
@@ -40,8 +40,8 @@ The API will start at `http://localhost:8080`.
 
 The API provides the following endpoints:
 
-- `GET /places`: Get all the places stored in the database.
-- `GET /places/{id}`: Get a specific place by its ID.
+- `GET /user/{username}`: Get the user by their username.
+- `GET /treasures`: Get a list of treasures.
 - `POST /places`: Create a new place.
 - `PUT /places/{id}`: Update an existing place.
 - `DELETE /places/{id}`: Delete an existing place.
