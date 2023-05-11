@@ -284,9 +284,7 @@ fun Route.userRouting(hashingService: HashingService, tokenService: TokenService
                 val userID = call.parameters["userID"]
                 if (userID.isNullOrBlank()) return@put call.respondText("Missing user id.",
                     status = HttpStatusCode.BadRequest)
-                val level = call.receive<String>()
-                println("AQUI")
-                println(level)
+                val level = call.receive<String>().replace("\"", "")
                 userCrud.updateUserLevel(userID.toInt(), level)
                 return@put call.respondText(
                     "Level of user with id $userID has been updated.", status = HttpStatusCode.Accepted
