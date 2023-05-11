@@ -49,6 +49,7 @@ class UserCRUD: UserDAO {
 
     override suspend fun checkIfUserExistByNick(nickName: String): Boolean {
         val user = selectUserByUserName(nickName)
+        println(user)
         return user == null
     }
 }

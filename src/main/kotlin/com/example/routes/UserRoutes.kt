@@ -41,30 +41,49 @@ fun Route.userRouting(hashingService: HashingService, tokenService: TokenService
                 call.respond(HttpStatusCode.BadRequest, "The request is null.")
                 return@post
             }
-            println(request)
+            println("request $request")
+
             val user = userCrud.selectUserByUserName(request.username)
+
             if (user == null){
                 call.respond(HttpStatusCode.NotFound, "Username not found.")
                 return@post
             }
-            val isValidPassword = user.password == request.password
-            if (!isValidPassword){
+            if (user.password != request.password){
                 call.respond(HttpStatusCode.Unauthorized, "Incorrect password")
                 return@post
             }
+
             val token = tokenService.generate(tokenConfig,
                 TokenClaim("userName", user.nickName)
             )
+            println(AuthResponse(token, user))
             call.respond(HttpStatusCode.OK, AuthResponse(token, user))
         }
 
         post {
             val newUser = call.receive<User>()
-            val userIfExist = userCrud.checkIfUserExistByNick(newUser.nickName)
-            if (userIfExist) {
+            val isNewUser = userCrud.checkIfUserExistByNick(newUser.nickName)
+            println("Existe un usuario con ese nombre? $isNewUser" )
+            if (isNewUser) {
                 userCrud.addNewUser(newUser.nickName, newUser.email, newUser.password)
-                call.respondText("User stored correctly.", status = HttpStatusCode.Created)
-            } else call.respondText("User already exist.", status = HttpStatusCode.OK)
+                call.respond( HttpStatusCode.Created, 201)
+            } else call.respond(status = HttpStatusCode.Conflict, 409 )
+        }
+
+        get("{userID}/picture"){
+            var userImage: File = File("")
+            val userID = call.parameters["userID"]
+            if (userID.isNullOrBlank()) return@get call.respondText("Missing user id.",
+                status = HttpStatusCode.BadRequest)
+
+            val userPhoto = userCrud.selectUserByID(userID.toInt())!!.photo
+            userImage = File("src/main/kotlin/com/example/user_pictures/$userPhoto")
+            if (userImage.exists()){
+                call.respondFile(userImage)
+            } else {
+                call.respondText("No image found.", status = HttpStatusCode.NotFound)
+            }
         }
 
         authenticate {
@@ -72,7 +91,7 @@ fun Route.userRouting(hashingService: HashingService, tokenService: TokenService
                 // hay que mandar Authorization header con Bearer token
                 val principal = call.principal<JWTPrincipal>()
                 val userName = principal?.getClaim("userName", String::class)
-                call.respond(HttpStatusCode.OK, "The username is $userName")
+                call.respond(HttpStatusCode.OK, "The username is $userName.")
             }
 
             get("{userID}"){
@@ -162,20 +181,7 @@ fun Route.userRouting(hashingService: HashingService, tokenService: TokenService
                     status = HttpStatusCode.NotFound)
             }
 
-            get("{userID}/picture"){
-                var userImage: File = File("")
-                val userID = call.parameters["userID"]
-                if (userID.isNullOrBlank()) return@get call.respondText("Missing user id.",
-                    status = HttpStatusCode.BadRequest)
 
-                val userPhoto = userCrud.selectUserByID(userID.toInt())!!.photo
-                userImage = File("src/main/kotlin/com/example/user_pictures/$userPhoto")
-                if (userImage.exists()){
-                    call.respondFile(userImage)
-                } else {
-                    call.respondText("No image found.", status = HttpStatusCode.NotFound)
-                }
-            }
 
             get("{userID}/stats"){
                 val userID = call.parameters["userID"]
