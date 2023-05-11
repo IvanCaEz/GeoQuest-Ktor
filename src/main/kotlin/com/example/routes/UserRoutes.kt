@@ -233,8 +233,7 @@ fun Route.userRouting(hashingService: HashingService, tokenService: TokenService
                 val reviews = reviewCrud.selectAllTreasureReviewsByUser(userID.toInt())
                 if (reviews.isNotEmpty()) {
                     call.respond(reviews)
-                } else call.respondText(
-                    "User with id $userID hasn't made any reviews yet.", status = HttpStatusCode.NotFound)
+                } else call.respond(status = HttpStatusCode.NotFound, listOf<Reviews>() )
             }
             get("{userID}/reviews/{reviewID}") {
                 val userID = call.parameters["userID"]
@@ -289,8 +288,7 @@ fun Route.userRouting(hashingService: HashingService, tokenService: TokenService
                 val treasuresSolved = treasureCrud.selectAllTreasuresSolvedByUser(userID.toInt())
                 if (treasuresSolved.isNotEmpty()){
                     call.respond(treasuresSolved)
-                } else call.respondText("User with id $userID hasn't solved any treasures yet.",
-                    status = HttpStatusCode.Accepted)
+                } else call.respond(status = HttpStatusCode.NotFound, listOf<Treasures>())
             }
 
 
@@ -299,17 +297,14 @@ fun Route.userRouting(hashingService: HashingService, tokenService: TokenService
                 if (userID.isNullOrBlank()) return@get call.respondText("Missing user id.",
                     status = HttpStatusCode.BadRequest)
                 val favList = favCrud.selectAllFavouritesByUserID(userID.toInt())
-                val favTreasureList = mutableListOf<Treasures>()
+                val favTreasureList = mutableListOf<Favourites>()
                 if (favList.isNotEmpty()){
-                    favList.forEach {
-                        favTreasureList.add(treasureCrud.selectTreasureByID(it.idTreasure)!!)
-                    }
+                    call.respond(favTreasureList.toList())
                 } else {
+                    call.respond(favTreasureList.toList())
                     call.respondText("User with id $userID hasn't marked any treasure as favourite.",
                         status = HttpStatusCode.Accepted)
                 }
-                call.respond(favTreasureList.toList())
-
             }
 
             get("{userID}/favs/{treasureID}"){
@@ -359,13 +354,4 @@ fun Route.userRouting(hashingService: HashingService, tokenService: TokenService
             }
         }
     }
-}
-
-fun Route.authenticate(){
-    authenticate{
-        get("authenticate"){
-            call.respond(HttpStatusCode.OK)
-        }
-    }
-
 }
