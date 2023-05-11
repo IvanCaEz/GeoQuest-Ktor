@@ -159,6 +159,10 @@ fun Route.userRouting(hashingService: HashingService, tokenService: TokenService
                 favList.forEach { fav ->
                     favCrud.deleteFavourite(userID.toInt(), fav.idTreasure)
                 }
+                val reviewList = reviewCrud.selectAllTreasureReviewsByUser(userID.toInt())
+                reviewList.forEach {  review ->
+                    treasureCrud.setScore(review.idTreasure)
+                }
                 // Eliminamos lo asociado al user y luego eliminamos el user
                 reportCrud.deleteReportsOfUser(userID.toInt())
                 reviewCrud.deleteReviewsOfUser(userID.toInt())

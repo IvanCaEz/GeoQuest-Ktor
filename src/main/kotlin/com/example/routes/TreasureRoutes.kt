@@ -381,6 +381,7 @@ fun Route.treasureRouting() {
                 }
             }
             reviewCrud.updateReview(reviewToUpdate)
+            treasureCrud.setScore(reviewToUpdate.idTreasure)
             return@put call.respondText(
                 "Review with id ${reviewToUpdate.idReview} updated correctly.",
                 status = HttpStatusCode.OK
@@ -415,7 +416,7 @@ fun Route.treasureRouting() {
             )
             //Eliminamos review y updateamos el score
             reviewCrud.deleteReview(treasureID.toInt(), reviewID.toInt())
-            // Llamar a la función PUT para updatear el score
+            treasureCrud.setScore(treasureID.toInt())
             call.respondText(
                 "Review with id $reviewID on treasure with id $treasureID has been deleted.",
                 status = HttpStatusCode.OK

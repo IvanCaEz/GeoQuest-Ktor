@@ -12,7 +12,8 @@ class FavouriteCRUD: FavouriteDAO {
     }
 
     override suspend fun selectAllFavouritesByUserID(userID: Int): List<Favourites> = dbQuery {
-        Favourite.select {Favourite.idUser eq userID}.map(::resultRowToFavourite)
+       val favList =  Favourite.select {Favourite.idUser eq userID}.map(::resultRowToFavourite)
+        if (favList.isNotEmpty()) return@dbQuery favList else emptyList()
     }
 
     override suspend fun selectAllFavouritesByTreasureID(treasureID: Int): List<Favourites> = dbQuery {
