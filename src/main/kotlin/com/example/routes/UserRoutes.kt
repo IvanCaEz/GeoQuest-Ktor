@@ -91,7 +91,7 @@ fun Route.userRouting(hashingService: HashingService, tokenService: TokenService
                 // hay que mandar Authorization header con Bearer token
                 val principal = call.principal<JWTPrincipal>()
                 val userName = principal?.getClaim("userName", String::class)
-                call.respond(HttpStatusCode.OK, "The username is $userName.")
+                call.respond(HttpStatusCode.OK, "$userName")
             }
 
             get("{userID}"){
