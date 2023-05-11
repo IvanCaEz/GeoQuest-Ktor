@@ -22,6 +22,7 @@ interface UserDAO {
     suspend fun selectUserByUserName(nickName: String): User?
     suspend fun addNewUser(nickname: String, email: String, password:String): User?
     suspend fun updateUser(userToUpdate: User): Boolean
+    suspend fun updateUserLevel(idUser: Int, userLevel: String): Boolean
     suspend fun deleteUser(idUser: Int): Boolean
     suspend fun checkIfUserExistByNick(nickName: String): Boolean
 

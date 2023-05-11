@@ -43,6 +43,12 @@ class UserCRUD: UserDAO {
         } > 0
     }
 
+    override suspend fun updateUserLevel(idUser: Int, userLevel: String): Boolean = dbQuery {
+        Users.update ({ Users.idUser eq idUser } ){
+            it[Users.userLevel] = userLevel
+        } > 0
+    }
+
     override suspend fun deleteUser(idUser: Int): Boolean = dbQuery {
         Users.deleteWhere { Users.idUser eq idUser } > 0
     }

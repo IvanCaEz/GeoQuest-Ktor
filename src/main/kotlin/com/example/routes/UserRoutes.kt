@@ -280,6 +280,19 @@ fun Route.userRouting(hashingService: HashingService, tokenService: TokenService
                 )
             }
 
+            put("{userID}/level"){
+                val userID = call.parameters["userID"]
+                if (userID.isNullOrBlank()) return@put call.respondText("Missing user id.",
+                    status = HttpStatusCode.BadRequest)
+                val level = call.receive<String>()
+                println("AQUI")
+                println(level)
+                userCrud.updateUserLevel(userID.toInt(), level)
+                return@put call.respondText(
+                    "Level of user with id $userID has been updated.", status = HttpStatusCode.Accepted
+                )
+            }
+
 
             get("{userID}/treasures"){
                 val userID = call.parameters["userID"]
@@ -297,11 +310,12 @@ fun Route.userRouting(hashingService: HashingService, tokenService: TokenService
                 if (userID.isNullOrBlank()) return@get call.respondText("Missing user id.",
                     status = HttpStatusCode.BadRequest)
                 val favList = favCrud.selectAllFavouritesByUserID(userID.toInt())
-                val favTreasureList = mutableListOf<Favourites>()
                 if (favList.isNotEmpty()){
-                    call.respond(favTreasureList.toList())
+                    call.respond(favList.toList())
+                    println("hola $favList")
                 } else {
-                    call.respond(favTreasureList.toList())
+                    call.respond(favList.toList())
+                    println("vacio $favList")
                     call.respondText("User with id $userID hasn't marked any treasure as favourite.",
                         status = HttpStatusCode.Accepted)
                 }
