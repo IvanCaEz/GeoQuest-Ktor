@@ -42,17 +42,6 @@ git clone https://gitlab.com/Xalexx/geoquest-ktorapi.git
 
 The API will start at `http://localhost:8080`.
 
-## Usage
-
-The API provides the following endpoints:
-
-- `GET /user/{username}`: Get the user by their username.
-- `GET /treasures`: Get a list of treasures.
-- `POST /places`: Create a new place.
-- `PUT /places/{id}`: Update an existing place.
-- `DELETE /places/{id}`: Delete an existing place.
-
-You can use tools like cURL or Postman to interact with the API.
 
 
 ## License
