@@ -133,7 +133,6 @@ fun Route.userRouting(hashingService: HashingService, tokenService: TokenService
                         }
                         else -> {}
                     }
-                    println("Subido ${part.name}")
                 }
 
                 val favouriteTreasuresID = favCrud.selectAllFavouritesByUserID(userID.toInt())
@@ -157,7 +156,7 @@ fun Route.userRouting(hashingService: HashingService, tokenService: TokenService
                 // Primero eliminamos los favoritos, los games (las reviews) y los reports
                 val favList = favCrud.selectAllFavouritesByUserID(userID.toInt())
                 favList.forEach { fav ->
-                    favCrud.deleteFavourite(userID.toInt(), fav.idTreasure)
+                    favCrud.deleteFavouriteFromUser(userID.toInt(), fav.idTreasure)
                 }
 
                 // Eliminamos lo asociado al user y luego eliminamos el user
@@ -187,9 +186,6 @@ fun Route.userRouting(hashingService: HashingService, tokenService: TokenService
                 } else return@get call.respondText("User with username $userName not found.",
                     status = HttpStatusCode.NotFound)
             }
-
-
-
             get("{userID}/stats"){
                 val userID = call.parameters["userID"]
                 if (userID.isNullOrBlank()) return@get call.respondText("Missing user id.",
@@ -204,9 +200,7 @@ fun Route.userRouting(hashingService: HashingService, tokenService: TokenService
                         if (listOfGames[i].solved) totalSolved++
                         else totalNotSolved++
                     }
-
                     val reportQuantity = reportCrud.selectAllReportByUserId(userID.toInt()).size
-
                     var diff = 0L
                     listOfGames.forEach { game ->
                         val startTime = LocalDateTime.parse(game.timeStart, formatter)
@@ -294,7 +288,6 @@ fun Route.userRouting(hashingService: HashingService, tokenService: TokenService
                 )
             }
 
-
             get("{userID}/treasures"){
                 val userID = call.parameters["userID"]
                 if (userID.isNullOrBlank()) return@get call.respondText("Missing user id.",
@@ -304,7 +297,6 @@ fun Route.userRouting(hashingService: HashingService, tokenService: TokenService
                     call.respond(treasuresSolved)
                 } else call.respond(status = HttpStatusCode.NotFound, listOf<Treasures>())
             }
-
 
             get("{userID}/favs"){
                 val userID = call.parameters["userID"]
@@ -347,7 +339,7 @@ fun Route.userRouting(hashingService: HashingService, tokenService: TokenService
                     status = HttpStatusCode.BadRequest)
                 if (treasureID.isNullOrBlank()) return@delete call.respondText("Missing treasure id.",
                     status = HttpStatusCode.BadRequest)
-                favCrud.deleteFavourite(userID.toInt(), treasureID.toInt())
+                favCrud.deleteFavouriteFromUser(userID.toInt(), treasureID.toInt())
                 call.respondText("Treasure with id $treasureID deleted from user with id $userID list of favorites.",
                     status = HttpStatusCode.OK)
             }
