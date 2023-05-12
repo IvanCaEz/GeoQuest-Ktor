@@ -283,6 +283,7 @@ fun Route.treasureRouting() {
             }
             treasureToUpdate.score = treasureCrud.setScore(treasureID.toInt())
             treasureCrud.updateTreasure(treasureToUpdate)
+
             return@put call.respondText(
                 "Treasure with id ${treasureToUpdate.idTreasure} and ${treasureToUpdate.name} has been updated.",
                 status = HttpStatusCode.OK
@@ -381,7 +382,9 @@ fun Route.treasureRouting() {
                 }
             }
             reviewCrud.updateReview(reviewToUpdate)
-            treasureCrud.setScore(reviewToUpdate.idTreasure)
+            val treasure = treasureCrud.selectTreasureByID(reviewToUpdate.idTreasure)
+            treasure!!.score = treasureCrud.setScore(reviewToUpdate.idTreasure)
+            treasureCrud.updateTreasure(treasure)
             return@put call.respondText(
                 "Review with id ${reviewToUpdate.idReview} updated correctly.",
                 status = HttpStatusCode.OK
@@ -416,7 +419,9 @@ fun Route.treasureRouting() {
             )
             //Eliminamos review y updateamos el score
             reviewCrud.deleteReview(treasureID.toInt(), reviewID.toInt())
-            treasureCrud.setScore(treasureID.toInt())
+            val treasure = treasureCrud.selectTreasureByID(treasureID.toInt())
+            treasure!!.score = treasureCrud.setScore(treasureID.toInt())
+            treasureCrud.updateTreasure(treasure)
             call.respondText(
                 "Review with id $reviewID on treasure with id $treasureID has been deleted.",
                 status = HttpStatusCode.OK

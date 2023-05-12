@@ -159,13 +159,16 @@ fun Route.userRouting(hashingService: HashingService, tokenService: TokenService
                 favList.forEach { fav ->
                     favCrud.deleteFavourite(userID.toInt(), fav.idTreasure)
                 }
-                val reviewList = reviewCrud.selectAllTreasureReviewsByUser(userID.toInt())
-                reviewList.forEach {  review ->
-                    treasureCrud.setScore(review.idTreasure)
-                }
+
                 // Eliminamos lo asociado al user y luego eliminamos el user
                 reportCrud.deleteReportsOfUser(userID.toInt())
                 reviewCrud.deleteReviewsOfUser(userID.toInt())
+                val reviewList = reviewCrud.selectAllTreasureReviewsByUser(userID.toInt())
+                reviewList.forEach {  review ->
+                    val treasure = treasureCrud.selectTreasureByID(review.idTreasure)
+                    treasure!!.score = treasureCrud.setScore(review.idTreasure)
+                    treasureCrud.updateTreasure(treasure)
+                }
                 gameCrud.deleteUserGames(userID.toInt())
                 userCrud.deleteUser(userID.toInt())
                 call.respondText("User with id $userID has been deleted.",
