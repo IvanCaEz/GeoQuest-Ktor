@@ -45,14 +45,9 @@ The API will start at `http://localhost:8080`.
 ## Endpoints
 
 We have used swagger and openapi for documentating our endpoints, you can see them at: 
-```bash 
-/swagger 
-```
+` /swagger `
  or
-```bash
- /openapi
-```
-
+`/openapi`
 
 ## License
 
