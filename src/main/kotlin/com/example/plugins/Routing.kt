@@ -14,12 +14,19 @@ import io.ktor.resources.*
 import io.ktor.server.resources.Resources
 import kotlinx.serialization.Serializable
 import io.ktor.server.application.*
+import io.ktor.server.plugins.openapi.*
+import io.ktor.server.plugins.swagger.*
 
 fun Application.configureRouting(hashingService: HashingService, tokenService: TokenService, tokenConfig: TokenConfig) {
     install(Resources)
     routing {
+
         userRouting(hashingService, tokenService, tokenConfig)
         treasureRouting()
         reportRouting()
+    }
+    routing {
+        swaggerUI(path = "swagger", swaggerFile = "openapi/documentation.yaml")
+        openAPI(path="openapi", swaggerFile = "openapi/documentation.yaml")
     }
 }
