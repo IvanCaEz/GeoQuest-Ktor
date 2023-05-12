@@ -27,7 +27,15 @@ class FavouriteCRUD: FavouriteDAO {
         }
         insertStatement.resultedValues?.singleOrNull()?.let(::resultRowToFavourite)
     }
-    override suspend fun deleteFavourite(userID: Int, treasureID: Int): Boolean = dbQuery {
+
+    override suspend fun deleteFavouriteFromUser(userID: Int, treasureID: Int): Boolean = dbQuery {
         Favourite.deleteWhere{ (idTreasure eq treasureID) and (idUser eq userID)  } > 0
+    }
+
+    override suspend fun deleteFavouriteByTreasureID(treasureID: Int): Boolean = dbQuery {
+        Favourite.deleteWhere{ (idTreasure eq treasureID) } > 0
+    }
+    override suspend fun deleteUserFavorites(userID: Int): Boolean = dbQuery {
+        Favourite.deleteWhere{ (idUser eq userID) } > 0
     }
 }

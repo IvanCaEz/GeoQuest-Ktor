@@ -15,5 +15,7 @@ interface FavouriteDAO {
     suspend fun selectAllFavouritesByTreasureID(treasureID: Int): List<Favourites>
 
     suspend fun addFavourite(userID: Int, treasureID: Int): Favourites?
-    suspend fun deleteFavourite(userID: Int, treasureID: Int): Boolean
+    suspend fun deleteFavouriteFromUser(userID: Int, treasureID: Int): Boolean
+    suspend fun deleteFavouriteByTreasureID(treasureID: Int): Boolean
+    suspend fun deleteUserFavorites(userID: Int): Boolean
 }
