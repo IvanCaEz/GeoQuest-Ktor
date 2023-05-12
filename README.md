@@ -7,7 +7,7 @@ This repository contains the source code for the GeoQuest API developed with Kto
 - [Features](#features)
 - [Authors](#authors)
 - [Configuration](#configuration)
-- [Usage](#usage)
+- [Endpoints](#endpoins)
 - [License](#license)
 
 
@@ -42,6 +42,16 @@ git clone https://gitlab.com/Xalexx/geoquest-ktorapi.git
 
 The API will start at `http://localhost:8080`.
 
+## Endpoints
+
+We have used swagger and openapi for documentating our endpoints, you can see them at: 
+```bash 
+/swagger 
+```
+ or
+```bash
+ /openapi
+```
 
 
 ## License
