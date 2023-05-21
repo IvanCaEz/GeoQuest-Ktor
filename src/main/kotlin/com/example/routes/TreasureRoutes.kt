@@ -335,6 +335,9 @@ fun Route.treasureRouting() {
             }
 
             reviewCrud.postReview(reviewToAdd)
+            val treasure = treasureCrud.selectTreasureByID(reviewToAdd.idTreasure)
+            treasure!!.score = treasureCrud.setScore(reviewToAdd.idTreasure)
+            treasureCrud.updateTreasure(treasure)
 
             return@post call.respondText(
                 "Treasure with id ${reviewToAdd.idTreasure} reviewed correctly.",
@@ -455,8 +458,6 @@ fun Route.treasureRouting() {
             gameCrud.postGame(gameToAdd)
             call.respondText("Game with id ${gameToAdd.idGame} added.")
         }
-
-
     }
 
 }
